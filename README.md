@@ -15,6 +15,7 @@ Contribute
 ==========
 
 Install the pre-commit hooks:
+
 ```
 pip install pre-commit
 ```
