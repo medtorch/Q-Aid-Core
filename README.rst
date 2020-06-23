@@ -15,7 +15,7 @@ Contribute
 ==========
 
 Install the pre-commit hooks:
-`pip install pre-commit`
+` pip install pre-commit `
 `pre-commit install`
 
 Builds the docs:
