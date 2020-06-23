@@ -11,6 +11,18 @@ Description
 
 A longer description of your project goes here...
 
+Contribute
+==========
+
+Install the pre-commit hooks:
+`pip install pre-commit`
+`pre-commit install`
+
+Builds the docs:
+`python setup.py docs`
+
+Run tests:
+`python setup.py test`
 
 Note
 ====
