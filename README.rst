@@ -15,14 +15,23 @@ Contribute
 ==========
 
 Install the pre-commit hooks:
-` pip install pre-commit `
-`pre-commit install`
+```
+pip install pre-commit
+```
+
+```
+pre-commit install
+```
 
 Builds the docs:
-`python setup.py docs`
+```
+python setup.py docs
+```
 
 Run tests:
-`python setup.py test`
+```
+python setup.py test
+```
 
 Note
 ====
