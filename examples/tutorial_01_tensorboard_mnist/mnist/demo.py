@@ -1,9 +1,10 @@
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from dataloader import test_loader, train_loader
-from model import model
 from torch.utils.tensorboard import SummaryWriter
+
+from examples.tutorial_01_tensorboard_mnist.mnist.dataloader import test_loader, train_loader
+from examples.tutorial_01_tensorboard_mnist.mnist import model
 
 writer = SummaryWriter()
 
@@ -63,11 +64,12 @@ def train(model, device, train_loader, optimizer, epoch):
     return avg_loss
 
 
-def test(model, device, test_loader):
+def model_test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
     with torch.no_grad():
+        # noinspection PyPackageRequirements
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)
@@ -98,7 +100,7 @@ test_losses = []
 accuracy_list = []
 for epoch in range(1, epochs + 1):
     trn_loss = train(model, device, train_loader, optimizer, epoch)
-    test_loss, accuracy = test(model, device, test_loader)
+    test_loss, accuracy = model_test(model, device, test_loader)
     train_losses.append(trn_loss)
     test_losses.append(test_loss)
     accuracy_list.append(accuracy)

@@ -1,7 +1,7 @@
 import argparse
 
 from PIL import Image
-from saliency_map import SaliencyMap
+from pytorchxai.xai.saliency_map import SaliencyMap
 from torch.utils.tensorboard import SummaryWriter
 
 parser = argparse.ArgumentParser()
