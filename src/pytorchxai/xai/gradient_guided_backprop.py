@@ -17,7 +17,7 @@ class GuidedBackprop:
         self.model = model
         self.gradients = None
         self.forward_relu_outputs = []
-        # Put model in evaluation mode
+
         self.model.eval()
         self.update_relus()
         self.hook_layers()
@@ -63,17 +63,14 @@ class GuidedBackprop:
                 module.register_forward_hook(relu_forward_hook_function)
 
     def generate_gradients(self, input_image, target_class):
-        # Forward pass
         model_output = self.model(input_image)
-        # Zero gradients
         self.model.zero_grad()
-        # Target for backprop
+
         one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
         one_hot_output[0][target_class] = 1
-        # Backward pass
+
         model_output.backward(gradient=one_hot_output)
-        # Convert Pytorch variable to numpy array
-        # [0] to get rid of the first channel
+
         gradients_as_arr = self.gradients.data.numpy()[0]
         return gradients_as_arr
 
@@ -88,7 +85,7 @@ class GuidedBackprop:
         neg_sal_grads = normalize_gradient(neg_sal)
 
         return {
-            "color_guided_grads": color_guided_grads,
+            "colored_guided_grads": color_guided_grads,
             "grayscale_guided_grads": grayscale_guided_grads,
             "positive_saliency_maps": pos_sal_grads,
             "negative_saliency_maps": neg_sal_grads,
