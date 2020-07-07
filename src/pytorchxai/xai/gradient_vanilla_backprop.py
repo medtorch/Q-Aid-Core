@@ -38,10 +38,15 @@ class VanillaBackprop:
 
         color_vanilla_bp = normalize_gradient(vanilla_grads)
 
-        grayscale_vanilla_grads = convert_to_grayscale(vanilla_grads)
-        grayscale_vanilla_bp = normalize_gradient(grayscale_vanilla_grads)
+        grayscale_vanilla_bp = convert_to_grayscale(vanilla_grads)
+        grayscale_vanilla_bp = normalize_gradient(grayscale_vanilla_bp)
+
+        grad_times_image = vanilla_grads[0] * input_image.detach().numpy()[0]
+        grad_times_image = convert_to_grayscale(grad_times_image)
+        grad_times_image = normalize_gradient(grad_times_image)
 
         return {
-            "colored_vanilla_backpropagation": color_vanilla_bp,
-            "grayscale_vanilla_backpropagation": grayscale_vanilla_bp,
+            "vanilla_colored_backpropagation": color_vanilla_bp,
+            "vanilla_grayscale_backpropagation": grayscale_vanilla_bp,
+            "vanilla_grayscale_grad_times_image": grad_times_image,
         }

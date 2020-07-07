@@ -1,4 +1,5 @@
 from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
+from pytorchxai.xai.gradient_scorecam import ScoreCam
 from pytorchxai.xai.gradient_vanilla_backprop import VanillaBackprop
 
 
@@ -9,6 +10,7 @@ class GradientVisualization:
         self.visualizations = [
             GuidedBackprop(model),
             VanillaBackprop(model),
+            ScoreCam(model),
         ]
 
     def generate(self, img, target):

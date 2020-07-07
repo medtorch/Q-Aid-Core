@@ -36,11 +36,10 @@ def normalize_gradient(gradient):
     return gradient
 
 
-def apply_colormap_on_image(org_im, activation, colormap_name):
+def apply_colormap_on_image(activation, colormap_name):
     """
         Apply heatmap on image
     Args:
-        org_img (PIL img): Original image
         activation_map (numpy arr): Activation map (grayscale) 0-255
         colormap_name (str): Name of the colormap
     """
@@ -53,11 +52,7 @@ def apply_colormap_on_image(org_im, activation, colormap_name):
     heatmap = Image.fromarray((heatmap * 255).astype(np.uint8))
     no_trans_heatmap = Image.fromarray((no_trans_heatmap * 255).astype(np.uint8))
 
-    # Apply heatmap on iamge
-    heatmap_on_image = Image.new("RGBA", org_im.size)
-    heatmap_on_image = Image.alpha_composite(heatmap_on_image, org_im.convert("RGBA"))
-    heatmap_on_image = Image.alpha_composite(heatmap_on_image, heatmap)
-    return no_trans_heatmap, heatmap_on_image
+    return no_trans_heatmap
 
 
 def preprocess_image(pil_im, resize_im=True):
