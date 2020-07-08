@@ -84,9 +84,14 @@ class GuidedBackprop:
         pos_sal_grads = normalize_gradient(pos_sal)
         neg_sal_grads = normalize_gradient(neg_sal)
 
+        grad_times_image = guided_grads[0] * input_image.detach().numpy()[0]
+        grad_times_image = convert_to_grayscale(grad_times_image)
+        grad_times_image = normalize_gradient(grad_times_image)
+
         return {
             "guided_grads_colored": color_guided_grads,
             "guided_grads_grayscale": grayscale_guided_grads,
+            "guided_grads_grayscale_grad_times_image": grad_times_image,
             "saliency_maps_positive": pos_sal_grads,
             "saliency_maps_negative": neg_sal_grads,
         }

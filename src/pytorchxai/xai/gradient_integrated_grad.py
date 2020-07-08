@@ -67,6 +67,11 @@ class IntegratedGradients:
             convert_to_grayscale(integrated_grads)
         )
 
+        grad_times_image = integrated_grads[0] * input_image.detach().numpy()[0]
+        grad_times_image = convert_to_grayscale(grad_times_image)
+        grad_times_image = normalize_gradient(grad_times_image)
+
         return {
             "integrated_gradients": grayscale_integrated_grads,
+            "integrated_gradients_times_image": grad_times_image,
         }
