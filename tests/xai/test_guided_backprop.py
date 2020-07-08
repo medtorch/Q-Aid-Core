@@ -1,29 +1,16 @@
 import pytest
 
-import numpy as np
-from PIL import Image
+from tests.xai.utils import create_image
 from torchvision import models
 
-import pytorchxai.xai.gradient_guided_backprop as ctx
-from pytorchxai.xai.utils import preprocess_image
-
-
-def create_image(width=244, height=244):
-    width = int(width)
-    height = int(height)
-
-    rgb_array = np.random.rand(height, width, 3) * 255
-    image = Image.fromarray(rgb_array.astype("uint8")).convert("RGB")
-    prep = preprocess_image(image)
-
-    return image, prep
+from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
 
 
 @pytest.mark.parametrize(
     "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
 )
 def test_sanity(model):
-    generator = ctx.GuidedBackprop(model)
+    generator = GuidedBackprop(model)
     assert generator is not None
 
 
@@ -31,10 +18,9 @@ def test_sanity(model):
     "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
 )
 def test_generate_gradients(model):
-    generator = ctx.GuidedBackprop(model)
+    generator = GuidedBackprop(model)
 
-    _, test_image = create_image()
-    test_target = 55
+    _, test_image, test_target = create_image()
 
     guided_grads = generator.generate_gradients(test_image, test_target)
 
@@ -45,10 +31,9 @@ def test_generate_gradients(model):
     "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
 )
 def test_generate(model):
-    generator = ctx.GuidedBackprop(model)
+    generator = GuidedBackprop(model)
 
-    test_image, test_input = create_image()
-    test_target = 55
+    test_image, test_input, test_target = create_image()
 
     output = generator.generate(test_image, test_input, test_target)
 
