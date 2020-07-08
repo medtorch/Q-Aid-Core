@@ -22,21 +22,22 @@ class GuidedBackprop:
         self.forward_relu_outputs = []
 
         self.model.eval()
-        self.update_relus()
-        self.hook_layers()
+        self._update_relus()
+        self._hook_layers()
 
-    def hook_layers(self):
+    def _hook_layers(self):
         """
             Method for registering a hook to the first layer
         """
 
         def hook_function(module, grad_in, grad_out):
+            print("set gradients to ", grad_in[0])
             self.gradients = grad_in[0]
 
         first_layer = list(self.model.features._modules.items())[0][1]
         first_layer.register_backward_hook(hook_function)
 
-    def update_relus(self):
+    def _update_relus(self):
         """
         Updates relu activation functions so that:
                 - they store the output in the forward pass.
