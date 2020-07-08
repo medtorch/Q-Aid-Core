@@ -1,3 +1,10 @@
+"""
+Guided Backpropagation(guided saliency) generates heat maps that are intended to provide insight into what aspects of an input image a convolutional neural network is using to make a prediction, focusing on what image features the neuron detects, not in what kind of stuff it doesn’t detect.
+
+For that, we backpropagate positive error signals – i.e. we set the negative gradients to zero. This is the application of the ReLU to the error signal itself during the backward pass.
+
+Like vanilla backpropagation, we also restrict ourselves to only positive inputs.
+"""
 import torch
 from torch.nn import ReLU
 
@@ -9,10 +16,6 @@ from pytorchxai.xai.utils import (
 
 
 class GuidedBackprop:
-    """
-       Produces gradients generated with guided back propagation from the given image
-    """
-
     def __init__(self, model):
         self.model = model
         self.gradients = None
@@ -23,46 +26,56 @@ class GuidedBackprop:
         self.hook_layers()
 
     def hook_layers(self):
+        """
+            Method for registering a hook to the first layer
+        """
+
         def hook_function(module, grad_in, grad_out):
             self.gradients = grad_in[0]
 
-        # Register hook to the first layer
         first_layer = list(self.model.features._modules.items())[0][1]
         first_layer.register_backward_hook(hook_function)
 
     def update_relus(self):
         """
-            Updates relu activation functions so that
-                1- stores output in forward pass
-                2- imputes zero for gradient values that are less than zero
+        Updates relu activation functions so that:
+                - they store the output in the forward pass.
+                - they set the negative gradients to zero.
         """
 
         def relu_backward_hook_function(module, grad_in, grad_out):
             """
-            If there is a negative gradient, change it to zero
+                If there is a negative gradient, change it to zero
             """
-            # Get last forward output
             corresponding_forward_output = self.forward_relu_outputs[-1]
             corresponding_forward_output[corresponding_forward_output > 0] = 1
             modified_grad_out = corresponding_forward_output * torch.clamp(
                 grad_in[0], min=0.0
             )
-            del self.forward_relu_outputs[-1]  # Remove last forward output
+            del self.forward_relu_outputs[-1]
             return (modified_grad_out,)
 
         def relu_forward_hook_function(module, ten_in, ten_out):
             """
-            Store results of forward pass
+                Store results of forward pass
             """
             self.forward_relu_outputs.append(ten_out)
 
-        # Loop through layers, hook up ReLUs
         for pos, module in self.model.features._modules.items():
             if isinstance(module, ReLU):
                 module.register_backward_hook(relu_backward_hook_function)
                 module.register_forward_hook(relu_forward_hook_function)
 
     def generate_gradients(self, input_image, target_class):
+        """
+            Generates the gradients using guided backpropagation from the given model and image.
+
+            Args:
+                input_image: Preprocessed input image.
+                target_class: Expected category.
+            Returns:
+                The gradients computed using the guided backpropagation.
+        """
         model_output = self.model(input_image)
         self.model.zero_grad()
 
@@ -75,6 +88,17 @@ class GuidedBackprop:
         return gradients_as_arr
 
     def generate(self, orig_image, input_image, target_class):
+        """
+            Generates and returns multiple saliency maps, based on guided backpropagation.
+
+            Args:
+                input_image: Preprocessed input image.
+                target_class: Expected category.
+            Returns:
+                Colored and grayscale gradients for the guided backpropagation.
+                Positive and negative saliency maps.
+                Grayscale gradients multiplied with the image itself.
+        """
         guided_grads = self.generate_gradients(input_image, target_class)
 
         color_guided_grads = normalize_gradient(guided_grads)
