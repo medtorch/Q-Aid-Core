@@ -1,9 +1,9 @@
 """
 Guided Backpropagation(guided saliency) generates heat maps that are intended to provide insight into what aspects of an input image a convolutional neural network is using to make a prediction, focusing on what image features the neuron detects, not in what kind of stuff it doesn’t detect.
 
-For that, we backpropagate positive error signals – i.e. we set the negative gradients to zero. This is the application of the ReLU to the error signal itself during the backward pass.
-
-Like vanilla backpropagation, we also restrict ourselves to only positive inputs.
+Algorithm details:
+ - We backpropagate positive error signals – i.e. we set the negative gradients to zero. This is the application of the ReLU to the error signal itself during the backward pass.
+ - Like vanilla backpropagation, we also restrict ourselves to only positive inputs.
 """
 import torch
 from torch.nn import ReLU
@@ -93,6 +93,7 @@ class GuidedBackprop:
             Generates and returns multiple saliency maps, based on guided backpropagation.
 
             Args:
+                orig_image: Original resized image.
                 input_image: Preprocessed input image.
                 target_class: Expected category.
             Returns:

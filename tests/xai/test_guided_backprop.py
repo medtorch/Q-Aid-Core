@@ -1,22 +1,17 @@
 import pytest
 
-from tests.xai.utils import create_image
-from torchvision import models
+from tests.xai.utils import MODELS, create_image
 
 from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
 
 
-@pytest.mark.parametrize(
-    "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
-)
+@pytest.mark.parametrize("model", MODELS)
 def test_sanity(model):
     generator = GuidedBackprop(model)
     assert generator is not None
 
 
-@pytest.mark.parametrize(
-    "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
-)
+@pytest.mark.parametrize("model", MODELS)
 def test_generate_gradients(model):
     generator = GuidedBackprop(model)
 
@@ -27,9 +22,7 @@ def test_generate_gradients(model):
     assert guided_grads.shape == (3, 224, 224)
 
 
-@pytest.mark.parametrize(
-    "model", [models.alexnet(pretrained=True), models.vgg19(pretrained=True)]
-)
+@pytest.mark.parametrize("model", MODELS)
 def test_generate(model):
     generator = GuidedBackprop(model)
 

@@ -1,3 +1,11 @@
+"""
+Gradient-weighted Class Activation Mapping(Grad-CAM) is an algorithm that can be used to visualize the class activation maps of a Convolutional Neural Network.
+
+Algorithm details:
+ - The algorithm finds the final convolutional layer in the network.
+ - It examines the gradient information flowing into that layer.
+ - The output of Grad-CAM is a heatmap visualization for a given class label.
+"""
 import numpy as np
 import torch
 import torchvision.transforms as T
@@ -7,10 +15,6 @@ from pytorchxai.xai.utils import apply_colormap_on_image
 
 
 class CamExtractor:
-    """
-        Extracts cam features from the model
-    """
-
     def __init__(self, model):
         self.model = model
         self.last_conv = None
@@ -22,88 +26,100 @@ class CamExtractor:
 
         self.gradients = None
 
-    def save_gradient(self, grad):
+    def _save_gradient(self, grad):
         self.gradients = grad
 
-    def forward_pass_on_convolutions(self, x):
+    def _forward_pass_on_convolutions(self, x):
         """
             Does a forward pass on convolutions, hooks the function at given layer
+            Args:
+                x: input image
+            Returns:
+                The output of the last convolutional layer.
+                The output of the model.
         """
         conv_output = None
         for module_pos, module in self.model.features._modules.items():
-            x = module(x)  # Forward
+            x = module(x)
             if module_pos == self.last_conv:
-                x.register_hook(self.save_gradient)
-                conv_output = x  # Save the convolution output on that layer
+                x.register_hook(self._save_gradient)
+                conv_output = x
         return conv_output, x
 
     def forward_pass(self, x):
         """
             Does a full forward pass on the model
+            Args:
+                x: input image
+            Returns:
+                The output of the last convolutional layer.
+                The output of the model.
         """
-        # Forward pass on the convolutions
-        conv_output, x = self.forward_pass_on_convolutions(x)
-        x = x.view(x.size(0), -1)  # Flatten
-        # Forward pass on the classifier
+        conv_output, x = self._forward_pass_on_convolutions(x)
+        x = x.view(x.size(0), -1)
         x = self.model.classifier(x)
         return conv_output, x
 
 
 class GradCam:
-    """
-        Produces class activation map
-    """
-
     def __init__(self, model):
         self.model = model
         self.model.eval()
-        # Define extractor
         self.extractor = CamExtractor(self.model)
 
     def generate_cam(self, input_image, target_class=None):
-        # Full forward pass
-        # conv_output is the output of convolutions at specified layer
-        # model_output is the final output of the model (1, 1000)
+        """
+            Does a full forward pass on the model and generates the activations maps.
+            Args:
+                input_image: input image
+                target_class: optional target class
+            Returns:
+                The actiovations maps.
+        """
         conv_output, model_output = self.extractor.forward_pass(input_image)
         if target_class is None:
             target_class = np.argmax(model_output.data.numpy())
-        # Target for backprop
+
         one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
         one_hot_output[0][target_class] = 1
-        # Zero grads
+
         self.model.features.zero_grad()
         self.model.classifier.zero_grad()
-        # Backward pass with specified target
+
         model_output.backward(gradient=one_hot_output, retain_graph=True)
-        # Get hooked gradients
         guided_gradients = self.extractor.gradients.data.numpy()[0]
-        # Get convolution outputs
         target = conv_output.data.numpy()[0]
-        # Get weights from gradients
-        weights = np.mean(
-            guided_gradients, axis=(1, 2)
-        )  # Take averages for each gradient
-        # Create empty numpy array for cam
+
+        weights = np.mean(guided_gradients, axis=(1, 2))
+
         cam = np.ones(target.shape[1:], dtype=np.float32)
-        # Multiply each weight with its conv output and then, sum
+
         for i, w in enumerate(weights):
             cam += w * target[i, :, :]
         cam = np.maximum(cam, 0)
-        cam = (cam - np.min(cam)) / (np.max(cam) - np.min(cam))  # Normalize between 0-1
-        cam = np.uint8(cam * 255)  # Scale between 0-255 to visualize
+        cam = (cam - np.min(cam)) / (np.max(cam) - np.min(cam))
+        cam = np.uint8(cam * 255)
         cam = (
             np.uint8(
                 Image.fromarray(cam).resize(
-                    (input_image.shape[2], input_image.shape[3]), Image.ANTIALIAS
+                    (input_image.shape[2], input_image.shape[3]), Image.ANTIALIAS,
                 )
-            )
-            / 255
+            ) / 255
         )
-        # from scipy.ndimage.interpolation import zoom
-        # cam = zoom(cam, np.array(input_image[0].shape[1:])/np.array(cam.shape))
         return cam
 
     def generate(self, orig_image, input_image, target_class=None):
+        """
+            Generates and returns the activations maps.
+
+            Args:
+                orig_image: Original resized image.
+                input_image: Preprocessed input image.
+                target_class: Expected category.
+            Returns:
+                Colored and grayscale Grad-Cam heatmaps.
+                Heatmap over the original image
+        """
         cam = self.generate_cam(input_image, target_class)
         heatmap, heatmap_on_image = apply_colormap_on_image(orig_image, cam, "hsv")
         return {

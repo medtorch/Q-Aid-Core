@@ -72,7 +72,7 @@ class ScoreCam:
             saliency_map = torch.unsqueeze(torch.unsqueeze(target[i, :, :], 0), 0)
             # Upsampling to input size
             saliency_map = F.interpolate(
-                saliency_map, size=(224, 224), mode="bilinear", align_corners=False
+                saliency_map, size=(224, 224), mode="bilinear", align_corners=False,
             )
             if saliency_map.max() == saliency_map.min():
                 continue
@@ -82,7 +82,7 @@ class ScoreCam:
             )
             # Get the target score
             w = F.softmax(
-                self.extractor.forward_pass(input_image * norm_saliency_map)[1], dim=1
+                self.extractor.forward_pass(input_image * norm_saliency_map)[1], dim=1,
             )[0][target_class]
             cam += w.data.numpy() * target[i, :, :].data.numpy()
         cam = np.maximum(cam, 0)
@@ -91,10 +91,9 @@ class ScoreCam:
         cam = (
             np.uint8(
                 Image.fromarray(cam).resize(
-                    (input_image.shape[2], input_image.shape[3]), Image.ANTIALIAS
+                    (input_image.shape[2], input_image.shape[3]), Image.ANTIALIAS,
                 )
-            )
-            / 255
+            ) / 255
         )
         return cam
 
