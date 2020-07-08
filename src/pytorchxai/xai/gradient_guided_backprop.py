@@ -85,8 +85,8 @@ class GuidedBackprop:
         neg_sal_grads = normalize_gradient(neg_sal)
 
         return {
-            "colored_guided_grads": color_guided_grads,
-            "grayscale_guided_grads": grayscale_guided_grads,
-            "positive_saliency_maps": pos_sal_grads,
-            "negative_saliency_maps": neg_sal_grads,
+            "guided_grads_colored": color_guided_grads,
+            "guided_grads_grayscale": grayscale_guided_grads,
+            "saliency_maps_positive": pos_sal_grads,
+            "saliency_maps_negative": neg_sal_grads,
         }
