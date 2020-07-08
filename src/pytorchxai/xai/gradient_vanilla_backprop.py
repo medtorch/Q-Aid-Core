@@ -33,7 +33,7 @@ class VanillaBackprop:
         gradients_as_arr = self.gradients.data.numpy()[0]
         return gradients_as_arr
 
-    def generate(self, input_image, target_class):
+    def generate(self, orig_image, input_image, target_class):
         vanilla_grads = self.generate_gradients(input_image, target_class)
 
         color_vanilla_bp = normalize_gradient(vanilla_grads)

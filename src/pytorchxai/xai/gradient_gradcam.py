@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
 import torchvision.transforms as T
 from PIL import Image
 
@@ -21,6 +20,11 @@ class CamExtractor:
         if not self.last_conv:
             raise ("invalid input model")
 
+        self.gradients = None
+
+    def save_gradient(self, grad):
+        self.gradients = grad
+
     def forward_pass_on_convolutions(self, x):
         """
             Does a forward pass on convolutions, hooks the function at given layer
@@ -29,7 +33,8 @@ class CamExtractor:
         for module_pos, module in self.model.features._modules.items():
             x = module(x)  # Forward
             if module_pos == self.last_conv:
-                conv_output = x
+                x.register_hook(self.save_gradient)
+                conv_output = x  # Save the convolution output on that layer
         return conv_output, x
 
     def forward_pass(self, x):
@@ -44,7 +49,7 @@ class CamExtractor:
         return conv_output, x
 
 
-class ScoreCam:
+class GradCam:
     """
         Produces class activation map
     """
@@ -62,29 +67,27 @@ class ScoreCam:
         conv_output, model_output = self.extractor.forward_pass(input_image)
         if target_class is None:
             target_class = np.argmax(model_output.data.numpy())
+        # Target for backprop
+        one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
+        one_hot_output[0][target_class] = 1
+        # Zero grads
+        self.model.features.zero_grad()
+        self.model.classifier.zero_grad()
+        # Backward pass with specified target
+        model_output.backward(gradient=one_hot_output, retain_graph=True)
+        # Get hooked gradients
+        guided_gradients = self.extractor.gradients.data.numpy()[0]
         # Get convolution outputs
-        target = conv_output[0]
+        target = conv_output.data.numpy()[0]
+        # Get weights from gradients
+        weights = np.mean(
+            guided_gradients, axis=(1, 2)
+        )  # Take averages for each gradient
         # Create empty numpy array for cam
         cam = np.ones(target.shape[1:], dtype=np.float32)
         # Multiply each weight with its conv output and then, sum
-        for i in range(len(target)):
-            # Unsqueeze to 4D
-            saliency_map = torch.unsqueeze(torch.unsqueeze(target[i, :, :], 0), 0)
-            # Upsampling to input size
-            saliency_map = F.interpolate(
-                saliency_map, size=(224, 224), mode="bilinear", align_corners=False
-            )
-            if saliency_map.max() == saliency_map.min():
-                continue
-            # Scale between 0-1
-            norm_saliency_map = (saliency_map - saliency_map.min()) / (
-                saliency_map.max() - saliency_map.min()
-            )
-            # Get the target score
-            w = F.softmax(
-                self.extractor.forward_pass(input_image * norm_saliency_map)[1], dim=1
-            )[0][target_class]
-            cam += w.data.numpy() * target[i, :, :].data.numpy()
+        for i, w in enumerate(weights):
+            cam += w * target[i, :, :]
         cam = np.maximum(cam, 0)
         cam = (cam - np.min(cam)) / (np.max(cam) - np.min(cam))  # Normalize between 0-1
         cam = np.uint8(cam * 255)  # Scale between 0-255 to visualize
@@ -96,13 +99,15 @@ class ScoreCam:
             )
             / 255
         )
+        # from scipy.ndimage.interpolation import zoom
+        # cam = zoom(cam, np.array(input_image[0].shape[1:])/np.array(cam.shape))
         return cam
 
     def generate(self, orig_image, input_image, target_class=None):
         cam = self.generate_cam(input_image, target_class)
         heatmap, heatmap_on_image = apply_colormap_on_image(orig_image, cam, "hsv")
         return {
-            "scorecam_heatmap": T.ToTensor()(heatmap),
-            "scorecam_heatmap_on_image": T.ToTensor()(heatmap_on_image),
-            "scorecam_grayscale": T.ToTensor()(cam),
+            "gradcam_heatmap": T.ToTensor()(heatmap),
+            "gradcam_heatmap_on_image": T.ToTensor()(heatmap_on_image),
+            "gradcam_grayscale": T.ToTensor()(cam),
         }

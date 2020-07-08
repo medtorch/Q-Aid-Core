@@ -74,7 +74,7 @@ class GuidedBackprop:
         gradients_as_arr = self.gradients.data.numpy()[0]
         return gradients_as_arr
 
-    def generate(self, input_image, target_class):
+    def generate(self, orig_image, input_image, target_class):
         guided_grads = self.generate_gradients(input_image, target_class)
 
         color_guided_grads = normalize_gradient(guided_grads)
