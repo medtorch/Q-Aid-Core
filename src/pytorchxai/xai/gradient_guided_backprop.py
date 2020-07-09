@@ -4,6 +4,8 @@ Guided Backpropagation(guided saliency) generates heat maps that are intended to
 Algorithm details:
  - We backpropagate positive error signals – i.e. we set the negative gradients to zero. This is the application of the ReLU to the error signal itself during the backward pass.
  - Like vanilla backpropagation, we also restrict ourselves to only positive inputs.
+
+[1] Springenberg et al. "Striving for Simplicity: The All Convolutional Net", 2014.
 """
 import torch
 from torch.nn import ReLU

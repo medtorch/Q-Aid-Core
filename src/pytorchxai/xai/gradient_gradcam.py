@@ -5,6 +5,8 @@ Algorithm details:
  - The algorithm finds the final convolutional layer in the network.
  - It examines the gradient information flowing into that layer.
  - The output of Grad-CAM is a heatmap visualization for a given class label.
+
+[1] Selvaraju, Ramprasaath R., et al. "Grad-cam: Visual explanations from deep networks via gradient-based localization." Proceedings of the IEEE International Conference on Computer Vision. 2017.
 """
 import numpy as np
 import torch
