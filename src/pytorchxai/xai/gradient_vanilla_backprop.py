@@ -1,21 +1,26 @@
+"""
+Vanilla Backpropagation generates heat maps that are intended to provide insight into what aspects of an input image a convolutional neural network is using to make a prediction.
+
+Algorithm details:
+ - The algorithm uses only the positive inputs.
+
+[1] Springenberg et al. "Striving for Simplicity: The All Convolutional Net", 2014.
+"""
+
 import torch
 
 from pytorchxai.xai.utils import convert_to_grayscale, normalize_gradient
 
 
 class VanillaBackprop:
-    """
-        Produces gradients generated with vanilla back propagation from the image
-    """
-
     def __init__(self, model):
         self.model = model
         self.gradients = None
 
         self.model.eval()
-        self.hook_layers()
+        self._hook_layers()
 
-    def hook_layers(self):
+    def _hook_layers(self):
         def hook_function(module, grad_in, grad_out):
             self.gradients = grad_in[0]
 
@@ -23,6 +28,16 @@ class VanillaBackprop:
         first_layer.register_backward_hook(hook_function)
 
     def generate_gradients(self, input_image, target_class):
+        """
+            Generates the gradients using vanilla backpropagation from the given model and image.
+
+            Args:
+                input_image: Preprocessed input image.
+                target_class: Expected category.
+            Returns:
+                The gradients computed using the vanilla backpropagation.
+        """
+
         model_output = self.model(input_image)
         self.model.zero_grad()
 
@@ -34,6 +49,17 @@ class VanillaBackprop:
         return gradients_as_arr
 
     def generate(self, orig_image, input_image, target_class):
+        """
+            Generates and returns multiple saliency maps, based on vanilla backpropagation.
+
+            Args:
+                orig_image: Original resized image.
+                input_image: Preprocessed input image.
+                target_class: Expected category.
+            Returns:
+                Colored and grayscale gradients for the vanilla backpropagation.
+                Grayscale gradients multiplied with the image itself.
+        """
         vanilla_grads = self.generate_gradients(input_image, target_class)
 
         color_vanilla_bp = normalize_gradient(vanilla_grads)
