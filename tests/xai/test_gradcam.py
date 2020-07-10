@@ -2,8 +2,8 @@ import pytest
 
 from tests.xai.utils import MODELS, create_image
 
-from pytorchxai.xai.gradient_cam import CamExtractor
-from pytorchxai.xai.gradient_gradcam import GradCam
+from pytorchxai.xai.cam_gradcam import GradCam
+from pytorchxai.xai.cam_utils import CamExtractor
 
 
 @pytest.mark.parametrize("model", MODELS)

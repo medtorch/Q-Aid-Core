@@ -1,10 +1,10 @@
-from pytorchxai.xai.gradient_gradcam import GradCam
+from pytorchxai.xai.cam_gradcam import GradCam
+from pytorchxai.xai.cam_scorecam import ScoreCam
 from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
 from pytorchxai.xai.gradient_guided_gradcam import GuidedGradCam
 from pytorchxai.xai.gradient_integrated_grad import IntegratedGradients
-from pytorchxai.xai.gradient_scorecam import ScoreCam
+from pytorchxai.xai.gradient_smooth_grad import SmoothGrad
 from pytorchxai.xai.gradient_vanilla_backprop import VanillaBackprop
-from pytorchxai.xai.smooth_grad import SmoothGrad
 
 
 class GradientVisualization:

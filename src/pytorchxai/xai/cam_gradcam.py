@@ -13,7 +13,7 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 
-from pytorchxai.xai.gradient_cam import CamExtractor
+from pytorchxai.xai.cam_utils import CamExtractor
 from pytorchxai.xai.utils import apply_colormap_on_image
 
 

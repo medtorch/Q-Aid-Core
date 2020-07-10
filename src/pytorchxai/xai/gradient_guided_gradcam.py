@@ -9,7 +9,7 @@ This technique is only useful for inspecting an already trained network, not for
 """
 import numpy as np
 
-from pytorchxai.xai.gradient_gradcam import GradCam
+from pytorchxai.xai.cam_gradcam import GradCam
 from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
 from pytorchxai.xai.utils import convert_to_grayscale, normalize_gradient
 

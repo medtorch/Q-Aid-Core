@@ -2,7 +2,7 @@ import pytest
 
 from tests.xai.utils import MODELS, create_image
 
-from pytorchxai.xai.gradient_scorecam import ScoreCam
+from pytorchxai.xai.cam_scorecam import ScoreCam
 
 
 @pytest.mark.parametrize("model", MODELS[:1])
