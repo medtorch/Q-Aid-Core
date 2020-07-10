@@ -33,7 +33,6 @@ class GuidedBackprop:
         """
 
         def hook_function(module, grad_in, grad_out):
-            print("set gradients to ", grad_in[0])
             self.gradients = grad_in[0]
 
         first_layer = list(self.model.features._modules.items())[0][1]
