@@ -1,6 +1,6 @@
 import pytest
 
-from tests.xai.utils import MODELS, create_image
+from .utils import MODELS, create_image
 
 from pytorchxai.xai.gradient_guided_backprop import GuidedBackprop
 

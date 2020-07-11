@@ -2,6 +2,8 @@ pillow
 torchvision
 torch
 pytest-cov
+matplotlib
+tensorboard
 # =============================================================================
 # DEPRECATION WARNING:
 #
