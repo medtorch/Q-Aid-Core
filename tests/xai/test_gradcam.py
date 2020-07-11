@@ -1,6 +1,6 @@
 import pytest
 
-from tests.xai.utils import MODELS, create_image
+from .utils import MODELS, create_image
 
 from pytorchxai.xai.cam_gradcam import GradCam
 from pytorchxai.xai.cam_utils import CamExtractor
