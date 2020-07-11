@@ -1,6 +1,7 @@
-PIL
+pillow
 torchvision
 torch
+pytest-cov
 # =============================================================================
 # DEPRECATION WARNING:
 #
