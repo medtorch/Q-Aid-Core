@@ -3,8 +3,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-from examples.tutorial_01_tensorboard_mnist.mnist.dataloader import test_loader, train_loader
-from examples.tutorial_01_tensorboard_mnist.mnist import model
+from dataloader import test_loader, train_loader
+from model import model
 
 writer = SummaryWriter()
 
