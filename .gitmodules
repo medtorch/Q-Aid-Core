@@ -1,0 +1,3 @@
+[submodule "vqa/MICCAI19-MedVQA"]
+	path = vqa/MICCAI19-MedVQA
+	url = https://github.com/aioz-ai/MICCAI19-MedVQA.git
