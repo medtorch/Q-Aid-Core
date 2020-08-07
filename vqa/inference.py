@@ -18,7 +18,7 @@ torch.backends.cudnn.benchmark = True
 device = torch.device("cpu")
 
 
-class VQA():
+class VQA:
     def __init__(self):
         model_path = model_root / "saved_models/BAN_MEVF/model_epoch19.pth"
 
@@ -30,21 +30,20 @@ class VQA():
             autoencoder=True,
             maml=True,
             feat_dim=64,
-            op='c',
+            op="c",
             num_hid=1024,
-            rnn='LSTM',
+            rnn="LSTM",
             gamma=2,
-            ae_model_path='pretrained_ae.pth',
-            maml_model_path='pretrained_maml.weights',
-            activation='relu',
+            ae_model_path="pretrained_ae.pth",
+            maml_model_path="pretrained_maml.weights",
+            activation="relu",
             dropout=0.5,
             eps_cnn=1e-5,
             momentum_cnn=0.05,
             map_location=device,
         )
 
-        self.eval_dset = dataset_RAD.VQAFeatureDataset("test", args,
-                                                       dictionary)
+        self.eval_dset = dataset_RAD.VQAFeatureDataset("test", args, dictionary)
         self.model = base_model.build_BAN(self.eval_dset, args)
 
         model_data = torch.load(model_path, device)
@@ -69,8 +68,7 @@ class VQA():
         tokens = tokens[:max_length]
         if len(tokens) < max_length:
             # Note here we pad in front of the sentence
-            padding = [dataset.dictionary.padding_idx
-                       ] * (max_length - len(tokens))
+            padding = [dataset.dictionary.padding_idx] * (max_length - len(tokens))
             tokens = tokens + padding
         utils.assert_eq(len(tokens), max_length)
         tokens = torch.tensor([tokens]).to(device)
