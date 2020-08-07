@@ -14,7 +14,13 @@ class Question(BaseModel):
 
 app = FastAPI()
 
+
 VQA = inference.VQA()
+
+
+@app.get("/models")
+def get_models():
+    return ["vqa"]
 
 
 @app.post("/vqa")

@@ -1,15 +1,10 @@
 import base64
 import json
-import sys
 from pathlib import Path
 
-import inference
+import requests
 
 model_root = Path("MICCAI19-MedVQA")
-sys.path.append("./MICCAI19-MedVQA")
-
-
-vqa = inference.VQA()
 
 data = json.load(open(model_root / "data_RAD/trainset.json"))
 img_folder = model_root / "data_RAD/images/"
@@ -37,9 +32,19 @@ fail = 0
 ok = 0
 total = 0
 
+requests_session = requests.Session()
+server = "127.0.0.1:8000"
+
 for tag in questions:
     for q in questions[tag]:
-        result = vqa.ask(q["question"], q["image_b64"])
+        payload = {
+            "question": q["question"],
+            "image_b64": q["image_b64"],
+        }
+        r = requests_session.post("http://" + server + "/vqa", json=payload, timeout=10)
+
+        data = json.loads(r.text)
+        result = data["answer"]
 
         expected = str(q["expected_answer"]).lower()
         actual = str(result).lower()

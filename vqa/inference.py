@@ -15,7 +15,7 @@ model_root = Path("MICCAI19-MedVQA")
 sys.path.append("./MICCAI19-MedVQA")
 
 torch.backends.cudnn.benchmark = True
-device = torch.device("cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class VQA:
