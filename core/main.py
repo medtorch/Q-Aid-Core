@@ -3,8 +3,7 @@ import sys
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-sys.path.append("./MICCAI19-MedVQA")
-import inference
+import vqa.inference
 
 
 class Question(BaseModel):
@@ -15,7 +14,7 @@ class Question(BaseModel):
 app = FastAPI()
 
 
-VQA = inference.VQA()
+VQA = vqa.inference.VQA()
 
 
 @app.get("/models")

@@ -3,8 +3,8 @@ FROM python:3.8-slim
 RUN mkdir /service
 WORKDIR /service
 
-COPY vqa .
-COPY vqa/requirements.txt .
+COPY core .
+COPY core/requirements.txt .
 
 RUN apt-get update
 RUN apt-get install python-opencv -y

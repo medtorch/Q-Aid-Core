@@ -14,7 +14,6 @@ import aws_cdk.aws_route53 as route53
 
 
 APP_DNS_NAME = "q-and-aid.com"
-COGNITO_CUSTOM_DOMAIN = "q-and-aid"
 HOSTED_ZONE_ID = "Z09644041TWEBPC10I0YZ"
 HOSTED_ZONE_NAME = "q-and-aid.com"
 
