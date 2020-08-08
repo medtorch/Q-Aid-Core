@@ -2,17 +2,18 @@ import base64
 import sys
 from pathlib import Path
 
-import base_model
 import cv2
-import dataset_RAD
 import numpy as np
 import torch
 import torchvision.transforms.functional as TF
-import utils
 from bunch import Bunch
 
-model_root = Path("MICCAI19-MedVQA")
 sys.path.append("./MICCAI19-MedVQA")
+import base_model
+import dataset_RAD
+import utils
+
+model_root = Path("MICCAI19-MedVQA")
 
 torch.backends.cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

@@ -1,10 +1,10 @@
 import sys
 
-import inference
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 sys.path.append("./MICCAI19-MedVQA")
+import inference
 
 
 class Question(BaseModel):
