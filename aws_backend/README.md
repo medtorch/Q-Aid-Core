@@ -38,5 +38,6 @@ This stack builds up a bunch of things:
     ```
 2. Make sure you have a valid AWS profile. You can generate one using
 ```amplify configure```
-3. Run `cdk synth` to check if the CDK works as expected, you can inspect the template if you're curious.
-4. Run `cdk deploy` to deploy the resources. 
+3. `cdk --profile medqaid-profile bootstrap aws://unknown-account/eu-central-1`
+4. Run `cdk synth` to check if the CDK works as expected, you can inspect the template if you're curious.
+5. Run `cdk deploy` to deploy the resources. 
