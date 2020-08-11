@@ -1,7 +1,6 @@
 # Q&AID app
 
-<img src="https://reactnative.dev/img/header_logo.svg" width="20%" >
-<img src="https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png" width="60%" >
+<img src="https://reactnative.dev/img/header_logo.svg" width="20%" > <img src="https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png" width="50%" >
 
 
 ## Run server
