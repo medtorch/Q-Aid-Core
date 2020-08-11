@@ -1,0 +1,16 @@
+{
+	"auth": {
+		"medqaid2productionbcb6fbc6": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"customAuth": false
+		}
+	},
+	"storage": {
+		"medqaid2storage2production": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
+	}
+}
