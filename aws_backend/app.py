@@ -6,6 +6,6 @@ from backend.stack import FargateStack
 
 
 app = core.App()
-FargateStack(app, "med-qaid-backend", env={"region": "eu-central-1"})
+FargateStack(app, "med-qaid-core-backend-v3", env={"region": "eu-central-1"})
 
 app.synth()

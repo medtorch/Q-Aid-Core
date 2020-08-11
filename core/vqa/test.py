@@ -6,7 +6,7 @@ import requests
 
 model_root = Path("MICCAI19-MedVQA")
 
-data = json.load(open(model_root / "data_RAD/trainset.json"))
+data = json.load(open(model_root / "data_RAD/testset.json"))
 img_folder = model_root / "data_RAD/images/"
 
 questions = {}
@@ -33,7 +33,7 @@ ok = 0
 total = 0
 
 requests_session = requests.Session()
-server = "127.0.0.1:8000"
+server = "https://q-and-aid.com"
 
 for tag in questions:
     for q in questions[tag]:
@@ -41,7 +41,7 @@ for tag in questions:
             "question": q["question"],
             "image_b64": q["image_b64"],
         }
-        r = requests_session.post("http://" + server + "/vqa", json=payload, timeout=10)
+        r = requests_session.post(server + "/vqa", json=payload, timeout=10)
 
         data = json.loads(r.text)
         result = data["answer"]
@@ -55,7 +55,7 @@ for tag in questions:
             print("FAIL: ", q["name"], q["expected_answer"], result)
         else:
             ok += 1
-            print("OK: ", q["name"])
+            print("OK: ", q["name"], " q:", q["question"], " a:", expected)
 
 print("Total ", total)
 print("ok ", ok)
