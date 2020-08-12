@@ -3,6 +3,8 @@ from torchvision import transforms
 from PIL import Image
 import requests
 from io import BytesIO
+import base64
+import json
 
 medical_imgs = [
     "https://media.sciencephoto.com/image/c0371577/800wm/C0371577-Stroke,_MRI_brain_scan.jpg",
@@ -20,29 +22,40 @@ nonmedical_imgs = [
     ]
 
 
-input_size = 224
+requests_session = requests.Session()
+server = "http://127.0.0.1:8000/prefilter"
 
-transform = transforms.Compose([
-        transforms.Resize(input_size),
-        transforms.CenterCrop(input_size),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-
-scripted_model = torch.jit.load("scripted_model.pt")
 
 print("Medical")
 for medical_img in medical_imgs:
     response = requests.get(medical_img)
-    img = Image.open(BytesIO(response.content)).convert("RGB")
-    transformed_image = transform(img).unsqueeze(0)
-    output = torch.sigmoid(scripted_model(transformed_image))
+    img = BytesIO(response.content).getvalue()
+    encoded_string = base64.b64encode(img).decode()
+
+    payload = {
+        "image_b64": encoded_string,
+    }
+
+    print("query", payload)
+    r = requests_session.post(server, json=payload, timeout=10)
+
+    data = json.loads(r.text)
+    print(data)
+    output = data["answer"]
     print(output)
 
 print("Nonmedical")
 for non_medical_img in nonmedical_imgs:
     response = requests.get(non_medical_img)
-    img = Image.open(BytesIO(response.content))
-    transformed_image = transform(img).unsqueeze(0)
-    output = torch.sigmoid(scripted_model(transformed_image))
+    img = BytesIO(response.content).getvalue()
+    encoded_string = base64.b64encode(img)
+
+    payload = {
+        "image_b64": encoded_string,
+    }
+
+    r = requests_session.post(server, json=payload, timeout=10)
+
+    data = json.loads(r.text)
+    output = data["answer"]
     print(output)
