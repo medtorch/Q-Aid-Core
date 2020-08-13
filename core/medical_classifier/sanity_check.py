@@ -13,13 +13,13 @@ medical_imgs = [
     "https://www.mqmi.com.au/wp-content/uploads/2019/10/CT-CORONARY-ANGIOGRAM-Severe-1.jpg",
     "http://www.medicalradiation.com/wp-content/uploads/fluoroscopy.jpg",
     "https://image.freepik.com/photos-gratuite/technologie-rayon-chirurgie-x-ray-xray_1172-444.jpg",
-    "https://prod-images-static.radiopaedia.org/images/51665621/badcab5dfbb1423245a3343156b347_big_gallery.jpeg"
-    ]
+    "https://prod-images-static.radiopaedia.org/images/51665621/badcab5dfbb1423245a3343156b347_big_gallery.jpeg",
+]
 
 nonmedical_imgs = [
     "https://i.pinimg.com/originals/e0/3d/5b/e03d5b812b2734826f76960eca5b5541.jpg",
-    "https://i.pinimg.com/originals/82/61/79/826179defbbdbc3ec7fdc37e15ea6bab.jpg"
-    ]
+    "https://i.pinimg.com/originals/82/61/79/826179defbbdbc3ec7fdc37e15ea6bab.jpg",
+]
 
 
 requests_session = requests.Session()
@@ -36,7 +36,6 @@ for medical_img in medical_imgs:
         "image_b64": encoded_string,
     }
 
-    print("query", payload)
     r = requests_session.post(server, json=payload, timeout=10)
 
     data = json.loads(r.text)
@@ -48,7 +47,7 @@ print("Nonmedical")
 for non_medical_img in nonmedical_imgs:
     response = requests.get(non_medical_img)
     img = BytesIO(response.content).getvalue()
-    encoded_string = base64.b64encode(img)
+    encoded_string = base64.b64encode(img).decode()
 
     payload = {
         "image_b64": encoded_string,

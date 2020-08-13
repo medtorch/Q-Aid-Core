@@ -35,11 +35,12 @@ def vqa_query(q: Question):
     except BaseException as e:
         return {"error": str(e)}
 
+
 @app.post("/prefilter")
 def vqa_query(q: Image):
     try:
         result = Prefilter.ask(q.image_b64)
-        print("anser ", result)
+        print("got result ", result)
         return {"answer": result}
     except BaseException as e:
         return {"error": str(e)}
