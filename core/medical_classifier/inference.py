@@ -37,5 +37,4 @@ class Prefilter:
         img = Image.open(BytesIO(decoded)).convert("RGB")
 
         transformed_image = self.transform(img).unsqueeze(0)
-        print("Process ", transformed_image.shape)
-        return torch.argmax(torch.sigmoid(self.model(transformed_image)))
+        return torch.argmax(torch.sigmoid(self.model(transformed_image))).item()

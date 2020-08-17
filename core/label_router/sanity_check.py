@@ -15,34 +15,35 @@ medical_imgs = [
     "h_900,c_limit/R.Kim-eyescan-w.jpg",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ4IevMy0w_3XO3Wc"
     "-PNRB5lBgwqvoSSttiAw&usqp=CAU",
-    "https://www.startradiology.com/uploads/images/english-class-x-elbow-fig-5-normal-anatomy-elbow-lateral-blanco.jpg"
-    ]
+    "https://www.startradiology.com/uploads/images/english-class-x-elbow-fig-5-normal-anatomy-elbow-lateral-blanco.jpg",
+]
 
-label_mapping = {'XR_ELBOW': 0,
- 'XR_FOREARM': 1,
- 'XR_HAND': 2,
- 'XR_HUMERUS': 3,
- 'XR_SHOULDER': 4,
- 'XR_WRIST': 5,
- 'brain': 6,
- 'breast': 7,
- 'chest_xray': 8,
- 'eyes': 9,
- 'heart': 10,
+label_mapping = {
+    "XR_ELBOW": 0,
+    "XR_FOREARM": 1,
+    "XR_HAND": 2,
+    "XR_HUMERUS": 3,
+    "XR_SHOULDER": 4,
+    "XR_WRIST": 5,
+    "brain": 6,
+    "breast": 7,
+    "chest_xray": 8,
+    "eyes": 9,
+    "heart": 10,
 }
 
-reversed_label_mapping = {
-    v: k for k,v in label_mapping.items()
-}
+reversed_label_mapping = {v: k for k, v in label_mapping.items()}
 
 input_size = 224
 
-transform = transforms.Compose([
+transform = transforms.Compose(
+    [
         transforms.Resize(input_size),
         transforms.CenterCrop(input_size),
         transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    ]
+)
 
 model = models.densenet121(pretrained=False)
 model.classifier = nn.Linear(1024, 11)
@@ -58,4 +59,3 @@ for medical_img in medical_imgs:
     transformed_image = transform(img).unsqueeze(0)
     output = my_softmax(model(transformed_image))
     print(reversed_label_mapping[torch.argmax(output).item()])
-
