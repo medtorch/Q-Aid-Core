@@ -3,30 +3,21 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-# Description
+## Features
 
-A longer description of your project goes here...
+- :key: TODO
 
-# Contribute
+## Usage
 
-## Install the pre-commit hooks:
+TODO
 
-```
-pip install pre-commit
-pre-commit install
-```
+## Installation
 
-# Builds the docs:
-```
-python setup.py docs
-```
+TODO
 
-# Run tests:
-```
-python setup.py test
-```
+## Contributors
 
-# Note
+See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
-This project has been set up using PyScaffold 3.2.3. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
+## License
+[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
