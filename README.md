@@ -20,4 +20,4 @@ TODO
 See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## License
-[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+[MIT License](https://choosealicense.com/licenses/mit/)
