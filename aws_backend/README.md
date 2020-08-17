@@ -1,4 +1,8 @@
 # Q&Aid
+
+![Q&Aid](https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small.png?raw=true)
+
+
 # AWS backend deployment
 
 ## Introduction
@@ -40,4 +44,4 @@ This stack builds up a bunch of things:
 ```amplify configure```
 3. `cdk --profile medqaid-profile bootstrap aws://unknown-account/eu-central-1`
 4. Run `cdk synth` to check if the CDK works as expected, you can inspect the template if you're curious.
-5. Run `cdk deploy` to deploy the resources. 
+5. Run `cdk deploy` to deploy the resources.

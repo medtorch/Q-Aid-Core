@@ -1,8 +1,7 @@
 
-# PyTorchXAI
+# Q&Aid
 
-Add a short description here!
-
+![Q&Aid](https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small.png?raw=true)
 
 # Description
 
