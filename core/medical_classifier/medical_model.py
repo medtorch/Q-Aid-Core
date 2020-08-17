@@ -1,7 +1,5 @@
 import torch
-from torch import nn, optim
-from torchvision import datasets, models, transforms
-from PIL import Image
+from torchvision import datasets, transforms
 import os
 import time
 import copy
@@ -25,7 +23,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 model = torch.hub.load("pytorch/vision:v0.6.0", model_name, pretrained=False)
-model.classifier[1] = nn.Linear(1280, num_classes)
+model.classifier[1] = torch.nn.Linear(1280, num_classes)
 
 
 def train_model(model, dataloaders, criterion, optimizer, num_epochs=25):
@@ -127,7 +125,7 @@ for param in model.parameters():
 model = model.to(device)
 optimizer_ft = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
-criterion = nn.CrossEntropyLoss()
+criterion = torch.nn.CrossEntropyLoss()
 
 model, hist = train_model(
     model, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs

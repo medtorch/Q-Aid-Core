@@ -1,12 +1,7 @@
-import torch
-from torchvision import transforms
-from PIL import Image
 import requests
 from io import BytesIO
-from torchvision import models
-from torch import nn
-import inference
 import base64
+import json
 
 medical_imgs = [
     "https://media.sciencephoto.com/image/c0371577/800wm/C0371577-Stroke,_MRI_brain_scan.jpg",
@@ -19,11 +14,21 @@ medical_imgs = [
 ]
 
 
-model = inference.ImageRouter()
+requests_session = requests.Session()
+server = "http://127.0.0.1:8000/router"
+
 
 for medical_img in medical_imgs:
     response = requests.get(medical_img)
     img = BytesIO(response.content).getvalue()
     encoded_string = base64.b64encode(img).decode()
 
-    print(model.ask(encoded_string))
+    payload = {
+        "image_b64": encoded_string,
+    }
+
+    r = requests_session.post(server, json=payload, timeout=10)
+
+    data = json.loads(r.text)
+    output = data["answer"]
+    print(output)

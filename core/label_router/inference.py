@@ -1,7 +1,6 @@
 import torch
 from torchvision import transforms
 from PIL import Image
-import requests
 from io import BytesIO
 from torchvision import models
 from torch import nn
@@ -45,7 +44,7 @@ class ImageRouter:
         self.model.classifier = nn.Linear(1024, 11)
         self.softmax = nn.Softmax()
 
-        state_dict = torch.load("saved_state_dict.pt", device)
+        state_dict = torch.load("label_router/saved_state_dict.pt", device)
         self.model.load_state_dict(state_dict)
         self.model.eval()
 
