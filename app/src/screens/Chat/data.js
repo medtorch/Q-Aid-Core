@@ -24,6 +24,16 @@ module.exports.templates = {
       'Please try something else!',
     ],
   },
+  messages: {
+    on_error: {
+      title: 'Error',
+      description: 'Something went wrong',
+    },
+    on_invalid_input: {
+      title: 'Error',
+      description: 'Please upload a medical image!',
+    },
+  },
 };
 
 module.exports.get_reply = function (type) {

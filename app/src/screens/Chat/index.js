@@ -11,26 +11,29 @@ import {
   Button,
   Popover,
 } from '@ui-kitten/components';
-import {StyleSheet, View, Image} from 'react-native';
+import {StyleSheet, View, Image, Alert} from 'react-native';
 import {ChatStyle} from '../../components';
 import PhotoUpload from 'react-native-photo-upload';
 
 import {Auth} from 'aws-amplify';
 import {GiftedChat} from 'react-native-gifted-chat';
 
-import {get_reply} from './data.js';
+import {templates, get_reply} from './data.js';
 import {MenuIcon, InfoIcon, ShareIcon, LogoutIcon, PhotoIcon} from './icons.js';
 import {ChatContext} from './context.js';
 import {User} from './user.js';
+import {Models} from './models.js';
+import {CreateAlert} from './utils.js';
+
+var replyIdx = 1;
+var ctx = new ChatContext();
+var user_ctx = new User();
+var models = new Models();
 
 export function Main() {
   const [menuVisible, setMenuVisible] = React.useState(false);
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-
-  var replyIdx = 1;
-  var ctx = new ChatContext();
-  var user_ctx = new User();
 
   useEffect(() => {
     setMessages([generateReply(get_reply('intro'))]);
@@ -62,69 +65,48 @@ export function Main() {
   );
 
   const fetchPhotoCategory = (bs64img) => {
-    var payload = {
-      image_b64: bs64img,
-    };
-
-    fetch('https://q-and-aid.com/router', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log('got router response ', responseData);
-        if (responseData['answer']) {
-          ctx.category = responseData['answer'];
-          setMessages((previousMessages) =>
-            GiftedChat.append(
-              previousMessages,
-              generateReply('That looks like ' + responseData['answer']),
-            ),
-          );
-        }
-      })
-      .catch((error) => {
-        console.log('router error', error);
-      });
+    models.image_router(bs64img, function (err, answer) {
+      if (err) {
+        console.log('image router failed ', err);
+        return;
+      }
+      ctx.category = answer;
+      setMessages((previousMessages) =>
+        GiftedChat.append(
+          previousMessages,
+          generateReply('That looks like ' + answer),
+        ),
+      );
+    });
   };
+
   const onPhotoUpload = async (file) => {
     if (file.error || typeof file.uri == 'undefined') {
       console.log('failed to load file ', file);
       return;
     }
+    ctx.reset();
     ctx.source.uri = file.uri;
   };
   const onPhotoSelect = (bs64img) => {
-    ctx.reset();
-
     setMessages([generateReply(get_reply('intro'))]);
 
-    var payload = {
-      image_b64: bs64img,
-    };
+    models.prefilter(bs64img, function (err, answer) {
+      if (err) {
+        console.log('prefilter failed ', err);
+        CreateAlert(templates.messages.on_error);
+        return;
+      }
+      if (answer === 0) {
+        ctx.state = 'valid';
+        ctx.image_value = bs64img;
 
-    fetch('https://q-and-aid.com/prefilter', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log('got prefilter response ', responseData);
-        if (responseData['answer'] !== null && responseData['answer'] === 0) {
-          ctx.state = 'valid';
-          ctx.image_value = bs64img;
-          fetchPhotoCategory(bs64img);
-        }
-      })
-      .catch((error) => {
-        console.log('prefilter error', error);
-      });
+        onImageRequest(ctx.source.uri);
+        fetchPhotoCategory(bs64img);
+      } else {
+        CreateAlert(templates.messages.on_invalid_input);
+      }
+    });
   };
 
   const renderImagePicker = () => {
@@ -181,12 +163,25 @@ export function Main() {
         avatar:
           'https://cdn0.iconfinder.com/data/icons/avatar-2-3/450/23_avatar__woman_user-512.png',
       },
+      seen: true,
     };
   };
 
-  const onReply = (cat, suff) => {
+  const onImageRequest = (img_src) => {
+    replyIdx += 1;
+    var msg = {
+      _id: replyIdx,
+      image: img_src,
+      createdAt: new Date(),
+      user: user_ctx.user,
+      seen: true,
+    };
+
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
+  };
+
+  const onReply = (cat) => {
     var msg = get_reply(cat);
-    if (suff) msg += suff;
 
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, generateReply(msg)),
@@ -200,37 +195,21 @@ export function Main() {
   };
 
   const onQuestion = (query, cbk) => {
-    if (ctx.source !== 'valid') {
-      console.log('asking q on invalid input');
+    if (ctx.state !== 'valid') {
       return cbk('error', 'invalid input');
     }
 
-    console.log('asking q ', query);
-    var payload = {
-      image_b64: ctx.image_value,
-      question: query,
-    };
-
-    fetch('https://q-and-aid.com/vqa', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log('got response ', responseData);
-        if (responseData.answer) {
-          return cbk('hit', responseData.answer);
-        }
-
-        return cbk('miss', 'no data');
-      })
-      .catch((error) => {
-        return cbk('error', error);
-      });
+    models.vqa(ctx.image_value, query, function (err, answer) {
+      if (err) {
+        return cbk('error', err);
+      }
+      if (answer != null) {
+        return cbk('hit', answer);
+      }
+      return cbk('miss', 'no data');
+    });
   };
+
   const onSend = useCallback((messages = []) => {
     if (messages.length == 0) return;
 
