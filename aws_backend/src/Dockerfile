@@ -1,4 +1,4 @@
-FROM bcebere/vqa:latest
+FROM bcebere/qaid:latest
 
 WORKDIR /service
 EXPOSE 80
