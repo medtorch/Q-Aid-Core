@@ -77,7 +77,31 @@ export function Main() {
     Context['Chat']['ChatImageSource'].uri = file.uri;
   };
   const onPhotoSelect = (bs64img) => {
-    Context['Chat']['ChatImageValue'] = bs64img;
+    Context['Chat']['ChatState'] = 'invalid';
+    Context['Chat']['ChatImageValue'] = null;
+
+    var payload = {
+      image_b64: bs64img,
+    };
+
+    fetch('https://q-and-aid.com/prefilter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        console.log('got prefilter response ', responseData);
+        if (responseData['answer'] !== null && responseData['answer'] === 0) {
+          Context['Chat']['ChatState'] = 'valid';
+          Context['Chat']['ChatImageValue'] = bs64img;
+        }
+      })
+      .catch((error) => {
+        return cbk('prefilter error', error);
+      });
   };
 
   const renderImagePicker = () => {

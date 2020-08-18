@@ -18,6 +18,7 @@ var Context = {
 
     ChatImagePending: null,
     ChatImageValuePending: null,
+    ChatState: 'invalid',
   },
 };
 module.exports = Context;

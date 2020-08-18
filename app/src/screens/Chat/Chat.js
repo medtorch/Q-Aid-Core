@@ -86,6 +86,12 @@ export function Chat() {
   };
 
   const onQuestion = (query, cbk) => {
+    if (Context['Chat']['ChatState'] !== 'valid') {
+      console.log('asking q on invalid input');
+      return cbk('error', 'invalid input');
+    }
+
+    console.log('asking q ', query);
     var payload = {
       image_b64: Context['Chat']['ChatImageValue'],
       question: query,
@@ -124,7 +130,6 @@ export function Chat() {
       return onReply('on_invalid_input');
     }
 
-    //onReply("on_task");
     setIsTyping(true);
 
     onQuestion(query, (status, data) => {

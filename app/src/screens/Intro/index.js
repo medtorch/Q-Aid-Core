@@ -7,6 +7,26 @@ import {Context, IntroStyle, palette} from '../../components';
 
 import Onboarding from 'react-native-onboarding-swiper';
 
+import {API, graphqlOperation} from 'aws-amplify';
+import {getUser} from '../../graphql/queries';
+
+const pages = [
+  {
+    backgroundColor: palette.background,
+    image: <Image source={Context['Logo']} style={IntroStyle.image} />,
+    title: 'Welcome to Q&Aid!',
+    subtitle:
+      'Explore the latest AI discoveries in healthcare. \n\n Ask a second opinion on medical images.',
+  },
+  {
+    backgroundColor: palette.background,
+    image: <Image source={Context['Logo']} style={IntroStyle.image} />,
+    title: 'Welcome to Q&Aid!',
+    subtitle:
+      'Debate about a medical issue in the chatroom. \n\n Share the investigation with a doctor!',
+  },
+];
+
 export function Intro(Comp) {
   class Wrapper extends React.Component {
     constructor(props) {
@@ -22,8 +42,17 @@ export function Intro(Comp) {
       }
     };
 
-    render() {
-      if (Context['Onboarding']['SkipOnboarding']) {
+    fetchUser = async () => {
+      API.graphql(graphqlOperation(getUser))
+        .then((result) => {
+          console.log('get user ', result);
+        })
+        .catch((err) => {
+          console.log('get user failed ', err);
+        });
+    };
+    renderInternal = (skipOnboarding) => {
+      if (skipOnboarding) {
         return (
           <>
             <Comp {...this.props} />
@@ -43,26 +72,14 @@ export function Intro(Comp) {
           imageContainerStyles={IntroStyle.image}
           bottomBarHighlight={false}
           transitionAnimationDuration={10}
-          pages={[
-            {
-              backgroundColor: palette.background,
-              image: (
-                <Image source={Context['Logo']} style={IntroStyle.image} />
-              ),
-              title: 'Welcome to Q&Aid!',
-              subtitle: 'Explore the latest AI discoveries in healthcare. \n\n Ask a second opinion on medical images.',
-            },
-            {
-              backgroundColor: palette.background,
-              image: (
-                <Image source={Context['Logo']} style={IntroStyle.image} />
-              ),
-              title: 'Welcome to Q&Aid!',
-              subtitle: 'Debate about a medical issue in the chatroom. \n\n Share the investigation with a doctor!',
-            },
-          ]}
+          pages={pages}
         />
       );
+    };
+    render() {
+      this.fetchUser();
+
+      return this.renderInternal(Context['Onboarding']['SkipOnboarding']);
     }
   }
 
