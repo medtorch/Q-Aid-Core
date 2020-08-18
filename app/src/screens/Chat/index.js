@@ -16,9 +16,9 @@ import {ChatStyle} from '../../components';
 import PhotoUpload from 'react-native-photo-upload';
 
 import {Auth} from 'aws-amplify';
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, Bubble} from 'react-native-gifted-chat';
 
-import {templates, get_reply} from './data.js';
+import {templates, get_reply, get_pretty_category} from './data.js';
 import {MenuIcon, InfoIcon, ShareIcon, LogoutIcon, PhotoIcon} from './icons.js';
 import {ChatContext} from './context.js';
 import {User} from './user.js';
@@ -70,11 +70,15 @@ export function Main() {
         console.log('image router failed ', err);
         return;
       }
-      ctx.category = answer;
+      ctx.category = get_pretty_category(answer);
       setMessages((previousMessages) =>
         GiftedChat.append(
           previousMessages,
-          generateReply('That looks like ' + answer),
+          generateReply(
+            'That looks like ' +
+              ctx.category +
+              '. What would you like to know?',
+          ),
         ),
       );
     });
@@ -150,6 +154,10 @@ export function Main() {
       />
     </View>
   );
+
+  const renderBubble = (props) => {
+    return <Bubble {...props} wrapperStyle={ChatStyle.bubble} />;
+  };
 
   const generateReply = (msg) => {
     replyIdx += 1;
@@ -255,6 +263,7 @@ export function Main() {
         onSend={(messages) => onSend(messages)}
         user={user_ctx.user}
         renderUsernameOnMessage
+        renderBubble={renderBubble}
         showUserAvatar={true}
       />
     </>

@@ -34,10 +34,27 @@ module.exports.templates = {
       description: 'Please upload a medical image!',
     },
   },
+  router_labels: {
+    XR_ELBOW: 'an elbow X-Ray',
+    XR_FOREARM: 'a forearm X-Ray',
+    XR_HAND: 'a hand X-Ray',
+    XR_HUMERUS: 'a humerus X-Ray',
+    XR_SHOULDER: 'a should X-Ray',
+    XR_WRIST: 'a wrist X-Ray',
+    brain: 'a brain scan',
+    breast: 'a breast scan',
+    chest_xray: 'a chest X-Ray',
+    eyes: 'an eyes scan',
+    heart: 'a heart scan',
+  },
 };
 
 module.exports.get_reply = function (type) {
   return module.exports.templates.replies[type][
     Math.floor(Math.random() * module.exports.templates.replies[type].length)
   ];
+};
+
+module.exports.get_pretty_category = function (input) {
+  return module.exports.templates.router_labels[input];
 };
