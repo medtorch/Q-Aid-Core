@@ -42,15 +42,6 @@ export function Intro(Comp) {
       }
     };
 
-    fetchUser = async () => {
-      API.graphql(graphqlOperation(getUser))
-        .then((result) => {
-          console.log('get user ', result);
-        })
-        .catch((err) => {
-          console.log('get user failed ', err);
-        });
-    };
     renderInternal = (skipOnboarding) => {
       if (skipOnboarding) {
         return (
@@ -77,8 +68,6 @@ export function Intro(Comp) {
       );
     };
     render() {
-      this.fetchUser();
-
       return this.renderInternal(Context['Onboarding']['SkipOnboarding']);
     }
   }
