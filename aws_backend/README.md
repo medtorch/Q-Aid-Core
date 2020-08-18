@@ -1,6 +1,6 @@
 # Q&Aid
 
-<img src="https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small.png" alt="Q&Aid" width="50%">
+<img align="center" src="https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="100%">
 
 # AWS backend deployment
 
