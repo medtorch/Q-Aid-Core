@@ -36,6 +36,7 @@ export function Main() {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    user_ctx.load();
     setMessages([generateReply(get_reply('intro'))]);
   }, []);
 
@@ -65,7 +66,9 @@ export function Main() {
   );
 
   const fetchPhotoCategory = (bs64img) => {
+    setIsTyping(true);
     models.image_router(bs64img, function (err, answer) {
+      setIsTyping(false);
       if (err) {
         console.log('image router failed ', err);
         return;
@@ -258,6 +261,7 @@ export function Main() {
         accessoryRight={renderOverflowMenuAction}
       />
       <GiftedChat
+        useNativeDriver={true}
         messages={messages}
         isTyping={isTyping}
         onSend={(messages) => onSend(messages)}

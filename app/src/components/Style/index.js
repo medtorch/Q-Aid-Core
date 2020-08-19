@@ -127,11 +127,11 @@ const AuthStyle = {
 
 const AuthHeaderStyle = {
   logo: {
-    paddingTop: 30,
     alignItems: 'center',
     backgroundColor: palette.background,
   },
   logoView: {
+    marginTop: 10,
     justiftyContent: 'center',
     alignItems: 'center',
     backgroundColor: palette.background,
@@ -141,8 +141,9 @@ const AuthHeaderStyle = {
 const IntroStyle = {
   image: {
     width: undefined,
-    height: '40%',
-    aspectRatio: 4 / 3,
+    height: '50%',
+    aspectRatio: 1,
+
     backgroundColor: palette.background,
   },
   title: {

@@ -12,9 +12,8 @@ module.exports.templates = {
     ],
     on_upload: ['That looks like a {{}}!'],
     on_invalid_input: [
-      'Stop sending me junk. Please ask a valid question!',
+      'Please ask a valid question!',
       "That's not a question!",
-      "C'mon, I'm busy!",
       'Sorry, I cannot recognize that input. Try something else!',
     ],
     on_miss: [

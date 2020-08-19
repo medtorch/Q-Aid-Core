@@ -22,8 +22,7 @@ const pages = [
     backgroundColor: palette.background,
     image: <Image source={Context['Logo']} style={IntroStyle.image} />,
     title: 'Welcome to Q&Aid!',
-    subtitle:
-      'Debate about a medical issue in the chatroom. \n\n Share the investigation with a doctor!',
+    subtitle: "Debate about a medical issue in the chatroom. \n\n Let's start!",
   },
 ];
 
