@@ -5,13 +5,20 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Q&Aid](https://github.com/medtorch/Q-Aid/workflows/Q&Aid/badge.svg)
 
+## Motivation
+
 ## Features
 
-- :key: TODO
+- :fire: Collection of healthcare AI models under [core](core), created using PyTorch.
+- :key: Served using [FastAPI](https://fastapi.tiangolo.com/).
+- :cyclone: Full deployment scripts for AWS.
+- :zap: Compatible React-Native app under [app](app).
 
 ## Usage
 
-TODO
+### Models
+### Server
+### App
 
 ## Installation
 
