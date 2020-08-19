@@ -1,11 +1,13 @@
-import model_vqa.inference
+from model_vqa.inference import VQA
 
 from proto import QuestionProto
 
 
 class HealthIntelProviderLocal:
-    def __init__(self, name, capabilities):
+    def __init__(self, name, capabilities, topics):
         self.name = name
+        self.capabilities = capabilities
+        self.topics = topics
 
         self.cache = {}
         self.models = {}
@@ -13,13 +15,15 @@ class HealthIntelProviderLocal:
         for feat in capabilities:
             self.cache[feat] = {}
             if feat == "vqa":
-                self.models[feat] = vqa.inference.VQA()
+                self.models[feat] = VQA()
             else:
                 raise "not implemented"
 
-    def ask(q: QuestionProto):
+    def ask(self, q: QuestionProto):
         if "vqa" not in self.models:
-            raise NotImplemented()
+            raise NotImplementedError()
+        if q.category not in self.topics:
+            raise NotImplementedError()
 
         results = {}
         try:

@@ -24,6 +24,8 @@ class Proxy:
         for provider in self.providers:
             if "vqa" not in provider.capabilities:
                 continue
+            if q.category not in provider.topics:
+                continue
             results[provider.name] = provider.ask(q)
         return results
 
@@ -37,11 +39,17 @@ class Filter:
     def ask(self, q: ImageProto):
         h = hash_input(q.image_b64)
         if h in self.cache:
-            return self.cache["prefilter"][h]
+            return self.cache[h]
 
-        results = {
-            "valid": (0 == self.prefilter.ask(q.image_b64)),
-            "cat": self.router.ask(q.image_b64),
+        valid = 0 == self.prefilter.ask(q.image_b64)
+
+        result = {
+            "valid": valid,
         }
-        self.cache[h] = results
-        return results
+
+        if valid:
+            result["category"] = self.router.ask(q.image_b64)
+
+        self.cache[h] = result
+
+        return result
