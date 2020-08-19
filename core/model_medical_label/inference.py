@@ -14,17 +14,17 @@ class ImageRouter:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         self.label_mapping = {
-            "XR_ELBOW": 0,
-            "XR_FOREARM": 1,
-            "XR_HAND": 2,
-            "XR_HUMERUS": 3,
-            "XR_SHOULDER": 4,
-            "XR_WRIST": 5,
-            "brain": 6,
-            "breast": 7,
-            "chest_xray": 8,
-            "eyes": 9,
-            "heart": 10,
+            "xr_elbow": 0,
+            "xr_forearm": 1,
+            "xr_hand": 2,
+            "xr_hummerus": 3,
+            "xr_shoulder": 4,
+            "xr_wrist": 5,
+            "scan_rain": 6,
+            "scan_breast": 7,
+            "xr_chest": 8,
+            "scan_eyes": 9,
+            "scan_heart": 10,
         }
 
         self.reversed_label_mapping = {v: k for k, v in self.label_mapping.items()}
@@ -44,7 +44,7 @@ class ImageRouter:
         self.model.classifier = nn.Linear(1024, 11)
         self.softmax = nn.Softmax()
 
-        state_dict = torch.load("label_router/saved_state_dict.pt", device)
+        state_dict = torch.load("model_medical_label/saved_state_dict.pt", device)
         self.model.load_state_dict(state_dict)
         self.model.eval()
 

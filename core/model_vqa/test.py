@@ -33,24 +33,42 @@ ok = 0
 total = 0
 
 requests_session = requests.Session()
-server = "https://q-and-aid.com"
+server = "http://127.0.0.1:8000"
 
 for tag in questions:
     for q in questions[tag]:
         payload = {
-            "question": q["question"],
             "image_b64": q["image_b64"],
         }
-        r = requests_session.post(server + "/vqa", json=payload, timeout=10)
+        r = requests_session.post(server + "/prefilter", json=payload, timeout=10)
 
         data = json.loads(r.text)
+        print(data)
         result = data["answer"]
 
-        expected = str(q["expected_answer"]).lower()
-        actual = str(result).lower()
+        if not result["valid"]:
+            continue
+
+        payload = {
+            "question": q["question"],
+            "image_b64": q["image_b64"],
+            "category": result["category"],
+        }
+        r = requests_session.post(server + "/question", json=payload, timeout=10)
+
+        data = json.loads(r.text)
+        print(data)
+        result = data["answer"]
+
+        matching = 0
+        for hospital in result:
+            expected = str(q["expected_answer"]).lower()
+            actual = str(result[hospital]["vqa"]).lower()
+            if expected == actual:
+                matching += 1
 
         total += 1
-        if expected != actual:
+        if matching == 0:
             fail += 1
             print("FAIL: ", q["name"], q["expected_answer"], result)
         else:

@@ -15,7 +15,7 @@ medical_imgs = [
 
 
 requests_session = requests.Session()
-server = "http://127.0.0.1:8000/router"
+server = "http://127.0.0.1:8000/prefilter"
 
 
 for medical_img in medical_imgs:
