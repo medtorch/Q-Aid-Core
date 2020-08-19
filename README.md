@@ -3,7 +3,7 @@
 </p>
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
-![PytorchXAI](https://github.com/medtorch/Q-Aid/workflows/PytorchXAI/badge.svg)
+![Q&Aid](https://github.com/medtorch/Q-Aid/workflows/Q&Aid/badge.svg)
 
 ## Features
 
