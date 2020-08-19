@@ -66,7 +66,9 @@ export function Main() {
   );
 
   const fetchPhotoCategory = (bs64img) => {
+    setIsTyping(true);
     models.image_router(bs64img, function (err, answer) {
+      setIsTyping(false);
       if (err) {
         console.log('image router failed ', err);
         return;
