@@ -1,3 +1,0 @@
-[submodule "core/vqa/MICCAI19-MedVQA"]
-	path = core/vqa/MICCAI19-MedVQA
-	url = https://github.com/bcebere/MICCAI19-MedVQA

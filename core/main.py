@@ -1,82 +1,39 @@
 import sys
 
 from fastapi import FastAPI
-from pydantic import BaseModel
 
-import vqa.inference
-import medical_classifier.inference
-import label_router.inference
-
-import hashlib
-
-
-def hash_input(val):
-    hash_object = hashlib.sha1(val.encode("utf-8"))
-    return hash_object.digest()
-
-
-class Question(BaseModel):
-    image_b64: str
-    question: str
-
-
-class Image(BaseModel):
-    image_b64: str
-
+from helpers import hash_input
+from proto import QuestionProto, ImageProto
+from proxy import Proxy, Filter
+from mocks import generate_mocks
 
 app = FastAPI()
+image_filter = Filter()
 
-VQA = vqa.inference.VQA()
-Prefilter = medical_classifier.inference.Prefilter()
-ImageRouter = label_router.inference.ImageRouter()
+proxy = Proxy()
 
-CACHE = {
-    "vqa": {},
-    "router": {},
-    "prefilter": {},
-}
+for hip_mock in generate_mocks():
+    proxy.register(hip_mock)
 
 
-@app.get("/models")
-def get_models():
-    return ["vqa", "router", "prefilter"]
+@app.get("/sources")
+def get_sources():
+    return proxy.sources()
 
 
-@app.post("/vqa")
-def vqa_query(q: Question):
+@app.post("/question")
+def vqa_query(q: QuestionProto):
     try:
-        result = VQA.ask(q.question, q.image_b64)
+        result = proxy.ask(q.question, q.image_b64)
         return {"answer": result}
     except BaseException as e:
         return {"error": str(e)}
 
 
 @app.post("/prefilter")
-def prefilter_query(q: Image):
+def prefilter_query(q: ImageProto):
     try:
-        h = hash_input(q.image_b64)
-        if h in CACHE["prefilter"]:
-            return {"answer": CACHE["prefilter"][h]}
-
-        result = Prefilter.ask(q.image_b64)
-        CACHE["prefilter"][h] = result
-
+        result = image_filter.ask(q)
         return {"answer": result}
     except BaseException as e:
-        return {"error": str(e)}
-
-
-@app.post("/router")
-def router_query(q: Image):
-    try:
-        h = hash_input(q.image_b64)
-        if h in CACHE["router"]:
-            return {"answer": CACHE["router"][h]}
-
-        result = ImageRouter.ask(q.image_b64)
-        CACHE["router"][h] = result
-
-        return {"answer": result}
-    except BaseException as e:
-        print("err ", e)
         return {"error": str(e)}

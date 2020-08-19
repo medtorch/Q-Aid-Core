@@ -20,7 +20,7 @@ class Prefilter:
             ]
         )
 
-        self.model = torch.jit.load("medical_classifier/scripted_model.pt")
+        self.model = torch.jit.load("model_prefilter/scripted_model.pt")
         self.model.eval()
 
         x = torch.randn((1, 3, 224, 224))
