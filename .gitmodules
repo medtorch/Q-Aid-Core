@@ -1,0 +1,3 @@
+[submodule "core/model_vqa/MICCAI19-MedVQA"]
+	path = core/model_vqa/MICCAI19-MedVQA
+	url = https://github.com/medtorch/MICCAI19-MedVQA
