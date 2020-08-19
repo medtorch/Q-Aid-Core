@@ -1,4 +1,4 @@
-<img align="center" src="https://github.com/medtorch/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid">
+<img align="center" src="https://github.com/medtorch/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="75%">
 
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
