@@ -1,6 +1,6 @@
-<img align="center" src="https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="75%">
-
-
+<p align="center">
+  <img align="center" src="https://github.com/medtorch/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="75%">
+</p>
 
 ## Run server
 
