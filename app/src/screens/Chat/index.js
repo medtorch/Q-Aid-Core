@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   Icon,
   MenuItem,
@@ -11,37 +11,32 @@ import {
   Button,
   Popover,
 } from '@ui-kitten/components';
-import {StyleSheet, View, Image} from 'react-native';
-import {Chat} from './Chat.js';
-import {Auth} from 'aws-amplify';
-import {Context, ChatStyle} from '../../components';
+import {StyleSheet, View, Image, Alert} from 'react-native';
+import {ChatStyle} from '../../components';
 import PhotoUpload from 'react-native-photo-upload';
 
-const MenuIcon = (props) => <Icon {...props} name="more-vertical" />;
+import {Auth} from 'aws-amplify';
+import {GiftedChat, Bubble} from 'react-native-gifted-chat';
 
-const InfoIcon = (props) => <Icon {...props} name="info" />;
-const ShareIcon = (props) => <Icon {...props} name="share-outline" />;
+import {templates, get_reply, get_pretty_category} from './data.js';
+import {MenuIcon, InfoIcon, ShareIcon, LogoutIcon, PhotoIcon} from './icons.js';
+import {ChatContext} from './context.js';
+import {User} from './user.js';
+import {Models} from './models.js';
+import {CreateAlert} from './utils.js';
 
-const LogoutIcon = (props) => <Icon {...props} name="log-out" />;
-
-const signOutAsync = async () => {
-  try {
-    await Auth.signOut();
-  } catch (error) {
-    console.log('error signing out: ', error);
-  }
-};
-
-const PhotoIcon = (props) => <Icon {...props} name="image" />;
+var replyIdx = 1;
+var ctx = new ChatContext();
+var user_ctx = new User();
+var models = new Models();
 
 export function Main() {
   const [menuVisible, setMenuVisible] = React.useState(false);
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsLoaded(true);
-    }, 1000);
+    setMessages([generateReply(get_reply('intro'))]);
   }, []);
 
   const toggleMenu = () => {
@@ -63,45 +58,59 @@ export function Main() {
         <MenuItem
           accessoryLeft={LogoutIcon}
           title="Logout"
-          onPress={signOutAsync}
+          onPress={user_ctx.signOut}
         />
       </OverflowMenu>
     </React.Fragment>
   );
+
+  const fetchPhotoCategory = (bs64img) => {
+    models.image_router(bs64img, function (err, answer) {
+      if (err) {
+        console.log('image router failed ', err);
+        return;
+      }
+      ctx.category = get_pretty_category(answer);
+      setMessages((previousMessages) =>
+        GiftedChat.append(
+          previousMessages,
+          generateReply(
+            'That looks like ' +
+              ctx.category +
+              '. What would you like to know?',
+          ),
+        ),
+      );
+    });
+  };
 
   const onPhotoUpload = async (file) => {
     if (file.error || typeof file.uri == 'undefined') {
       console.log('failed to load file ', file);
       return;
     }
-    Context['Chat']['ChatImageSource'].uri = file.uri;
+    ctx.reset();
+    ctx.source.uri = file.uri;
   };
   const onPhotoSelect = (bs64img) => {
-    Context['Chat']['ChatState'] = 'invalid';
-    Context['Chat']['ChatImageValue'] = null;
+    setMessages([generateReply(get_reply('intro'))]);
 
-    var payload = {
-      image_b64: bs64img,
-    };
+    models.prefilter(bs64img, function (err, answer) {
+      if (err) {
+        console.log('prefilter failed ', err);
+        CreateAlert(templates.messages.on_error);
+        return;
+      }
+      if (answer === 0) {
+        ctx.state = 'valid';
+        ctx.image_value = bs64img;
 
-    fetch('https://q-and-aid.com/prefilter', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log('got prefilter response ', responseData);
-        if (responseData['answer'] !== null && responseData['answer'] === 0) {
-          Context['Chat']['ChatState'] = 'valid';
-          Context['Chat']['ChatImageValue'] = bs64img;
-        }
-      })
-      .catch((error) => {
-        return cbk('prefilter error', error);
-      });
+        onImageRequest(ctx.source.uri);
+        fetchPhotoCategory(bs64img);
+      } else {
+        CreateAlert(templates.messages.on_invalid_input);
+      }
+    });
   };
 
   const renderImagePicker = () => {
@@ -128,7 +137,7 @@ export function Main() {
               <Image
                 style={ChatStyle.modalImage}
                 resizeMode="cover"
-                source={Context['Chat']['ChatImageSource']}
+                source={ctx.source}
               />
             </PhotoUpload>
           </Card>
@@ -146,6 +155,100 @@ export function Main() {
     </View>
   );
 
+  const renderBubble = (props) => {
+    return <Bubble {...props} wrapperStyle={ChatStyle.bubble} />;
+  };
+
+  const generateReply = (msg) => {
+    replyIdx += 1;
+    return {
+      _id: replyIdx,
+      text: msg,
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'Q&Aid',
+        avatar:
+          'https://cdn0.iconfinder.com/data/icons/avatar-2-3/450/23_avatar__woman_user-512.png',
+      },
+      seen: true,
+    };
+  };
+
+  const onImageRequest = (img_src) => {
+    replyIdx += 1;
+    var msg = {
+      _id: replyIdx,
+      image: img_src,
+      createdAt: new Date(),
+      user: user_ctx.user,
+      seen: true,
+    };
+
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
+  };
+
+  const onReply = (cat) => {
+    var msg = get_reply(cat);
+
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, generateReply(msg)),
+    );
+  };
+
+  const isValidQuery = (input) => {
+    if (input.length == 0) return 'invalid';
+    if (input.trim().substr(-1) !== '?') return 'invalid';
+    return 'valid';
+  };
+
+  const onQuestion = (query, cbk) => {
+    if (ctx.state !== 'valid') {
+      return cbk('error', 'invalid input');
+    }
+
+    models.vqa(ctx.image_value, query, function (err, answer) {
+      if (err) {
+        return cbk('error', err);
+      }
+      if (answer != null) {
+        return cbk('hit', answer);
+      }
+      return cbk('miss', 'no data');
+    });
+  };
+
+  const onSend = useCallback((messages = []) => {
+    if (messages.length == 0) return;
+
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages),
+    );
+    var query = messages[0].text;
+    var status = isValidQuery(query);
+
+    if (status !== 'valid') {
+      return onReply('on_invalid_input');
+    }
+
+    setIsTyping(true);
+
+    onQuestion(query, (status, data) => {
+      console.log('VQA said ', status, data);
+      setIsTyping(false);
+      switch (status) {
+        case 'hit': {
+          return setMessages((previousMessages) =>
+            GiftedChat.append(previousMessages, generateReply(data)),
+          );
+        }
+        default: {
+          return onReply('on_miss');
+        }
+      }
+    });
+  }, []);
+
   return (
     <>
       <TopNavigation
@@ -154,7 +257,15 @@ export function Main() {
         title={renderTitle}
         accessoryRight={renderOverflowMenuAction}
       />
-      <Chat />
+      <GiftedChat
+        messages={messages}
+        isTyping={isTyping}
+        onSend={(messages) => onSend(messages)}
+        user={user_ctx.user}
+        renderUsernameOnMessage
+        renderBubble={renderBubble}
+        showUserAvatar={true}
+      />
     </>
   );
 }

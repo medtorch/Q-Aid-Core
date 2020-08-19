@@ -191,6 +191,9 @@ const ChatStyle = {
     aspectRatio: 4 / 3,
     borderRadius: 20,
   },
+  bubble: {
+    right: {backgroundColor: palette.slate},
+  },
 };
 
 export {palette, AuthStyle, AuthHeaderStyle, IntroStyle, ChatStyle};
