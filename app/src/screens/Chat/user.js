@@ -4,7 +4,6 @@ import {Auth} from 'aws-amplify';
 class User {
   constructor() {
     this.reset();
-    this.load();
   }
 
   reset() {
@@ -16,9 +15,10 @@ class User {
   load() {
     var self = this;
     Auth.currentSession()
-      .then(
-        (data) => (self.user.name = data['accessToken']['payload']['username']),
-      )
+      .then((data) => {
+        self.user.name = data['accessToken']['payload']['username'];
+        console.log('user ', self.user.name);
+      })
       .catch((err) => console.log(err));
   }
 

@@ -36,6 +36,7 @@ export function Main() {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    user_ctx.load();
     setMessages([generateReply(get_reply('intro'))]);
   }, []);
 
@@ -258,6 +259,7 @@ export function Main() {
         accessoryRight={renderOverflowMenuAction}
       />
       <GiftedChat
+        useNativeDriver={true}
         messages={messages}
         isTyping={isTyping}
         onSend={(messages) => onSend(messages)}
