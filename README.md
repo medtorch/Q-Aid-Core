@@ -45,7 +45,7 @@ cd core
 uvicorn main:app
 ```
 ### AWS deployment
-Seet the [AWS README](aws/README.md).
+Seet the [AWS README](aws_backend/README.md).
 
 
 ## Contributors
