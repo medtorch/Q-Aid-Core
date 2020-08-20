@@ -1,6 +1,9 @@
-# Q&Aid
+<p align="center">
+  <img align="center" src="https://github.com/medtorch/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="75%">
+</p>
 
-<img align="center" src="https://github.com/tudorcebere/Q-Aid/blob/master/misc/q_aid_logo_small1.png" alt="Q&Aid" width="75%">
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Q&Aid](https://github.com/medtorch/Q-Aid/workflows/Q&Aid/badge.svg)
 
 # AWS backend deployment
 

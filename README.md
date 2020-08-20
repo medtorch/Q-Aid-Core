@@ -5,17 +5,48 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Q&Aid](https://github.com/medtorch/Q-Aid/workflows/Q&Aid/badge.svg)
 
-## Features
-
-- :key: TODO
-
-## Usage
+## Motivation
 
 TODO
+
+## Features
+
+- :fire: Collection of healthcare AI models under [core](core), created using PyTorch.
+- :key: Served using [FastAPI](https://fastapi.tiangolo.com/).
+- :cyclone: Full deployment scripts for AWS.
+- :zap: Compatible React-Native app under [app](app) folder.
 
 ## Installation
 
-TODO
+```
+pip install -r requirements.txt
+```
+
+## Usage
+
+### Models
+
+See the [models README](core/README.md).
+
+### App
+See the [apps README](app/README.md).
+
+### Server
+
+Run the server using `Docker`
+```
+docker build -t qaid/model_api .
+docker run -p 8000:8000 qaid/model_api
+```
+
+Or using `uvicorn`
+```
+cd core
+uvicorn main:app
+```
+### AWS deployment
+Seet the [AWS README](aws_backend/README.md).
+
 
 ## Contributors
 
