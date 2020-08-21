@@ -5,8 +5,6 @@ from proxy import Proxy, Filter
 from mocks import generate_mocks
 
 app = FastAPI()
-image_filter = Filter()
-
 proxy = Proxy()
 
 for hip_mock in generate_mocks():
@@ -18,24 +16,42 @@ def get_sources():
     return proxy.sources()
 
 
-@app.post("/question")
-def vqa_query(q: QuestionProto):
+@app.post("/vqa")
+def vqa_task(q: QuestionProto):
     try:
-        result = proxy.ask(q)
+        prefilter = proxy.prefilter(q.image_b64)
+        if not prefilter["valid"]:
+            return {"error": "invalid input"}
+
+        result = proxy.ask(q.question, q.image_b64, prefilter["topic"])
+        result = proxy.aggregate(result)
+        return {"answer": result}
+    except BaseException as e:
+        return {"error": str(e)}
+
+
+@app.post("/segmentation")
+def segmentation_task(q: ImageProto):
+    try:
+        prefilter = proxy.prefilter(q.image_b64)
+        if not prefilter["valid"]:
+            return {"error": "invalid input"}
+
+        result = proxy.segment(q.image_b64, prefilter["topic"])
         return {"answer": result}
     except BaseException as e:
         return {"error": str(e)}
 
 
 @app.post("/prefilter")
-def prefilter_query(q: ImageProto):
+def prefilter_task(q: ImageProto):
     try:
-        result = image_filter.ask(q)
+        result = proxy.prefilter(q.image_b64)
 
         if not result["valid"]:
             return {"answer": result}
 
-        result["anomalies"] = proxy.has_anomalies(q, result)
+        result["anomalies"] = proxy.anomalies(q.image_b64, result["topic"])
 
         return {"answer": result}
     except BaseException as e:

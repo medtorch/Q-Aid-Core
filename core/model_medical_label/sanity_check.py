@@ -30,5 +30,5 @@ for medical_img in medical_imgs:
     r = requests_session.post(server, json=payload, timeout=10)
 
     data = json.loads(r.text)
+    print(data)
     output = data["answer"]
-    print(output)

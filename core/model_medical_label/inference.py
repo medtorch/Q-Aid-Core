@@ -56,7 +56,7 @@ class ImageRouter:
 
     def ask(self, image_b64):
         decoded = base64.b64decode(image_b64)
-        img = Image.open(BytesIO(decoded)).convert("RGB")
+        img = Image.open(BytesIO(decoded)).convert("LA").convert("RGB")
 
         transformed_image = self.transform(img).unsqueeze(0)
         output = self.softmax(self.model(transformed_image))

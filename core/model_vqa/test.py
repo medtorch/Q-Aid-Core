@@ -55,9 +55,8 @@ for tag in questions:
         payload = {
             "question": q["question"],
             "image_b64": q["image_b64"],
-            "category": result["category"],
         }
-        r = requests_session.post(server + "/question", json=payload, timeout=10)
+        r = requests_session.post(server + "/vqa", json=payload, timeout=10)
 
         data = json.loads(r.text)
         print(data)
