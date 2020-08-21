@@ -96,13 +96,13 @@ class BrainSegmentationDataset(Dataset):
     out_channels = 1
 
     def __init__(
-            self,
-            images_dir,
-            transform=None,
-            image_size=256,
-            subset="train",
-            random_sampling=True,
-            seed=42,
+        self,
+        images_dir,
+        transform=None,
+        image_size=256,
+        subset="train",
+        random_sampling=True,
+        seed=42,
     ):
         assert subset in ["all", "train", "validation"]
 
@@ -114,8 +114,8 @@ class BrainSegmentationDataset(Dataset):
             image_slices = []
             mask_slices = []
             for filename in sorted(
-                    filter(lambda f: ".tif" in f, filenames),
-                    key=lambda x: int(x.split(".")[-2].split("_")[4]),
+                filter(lambda f: ".tif" in f, filenames),
+                key=lambda x: int(x.split(".")[-2].split("_")[4]),
             ):
                 filepath = os.path.join(dirpath, filename)
                 if "mask" in filename:
@@ -161,11 +161,9 @@ class BrainSegmentationDataset(Dataset):
         self.volumes = [(normalize_volume(v), m) for v, m in self.volumes]
 
         # probabilities for sampling slices based on masks
-        self.slice_weights = [m.sum(axis=-1).sum(axis=-1) for v, m in
-                              self.volumes]
+        self.slice_weights = [m.sum(axis=-1).sum(axis=-1) for v, m in self.volumes]
         self.slice_weights = [
-            (s + (s.sum() * 0.1 / len(s))) / (s.sum() * 1.1) for s in
-            self.slice_weights
+            (s + (s.sum() * 0.1 / len(s))) / (s.sum() * 1.1) for s in self.slice_weights
         ]
 
         # add channel dimension to masks
@@ -196,8 +194,7 @@ class BrainSegmentationDataset(Dataset):
         if self.random_sampling:
             patient = np.random.randint(len(self.volumes))
             slice_n = np.random.choice(
-                range(self.volumes[patient][0].shape[0]),
-                p=self.slice_weights[patient]
+                range(self.volumes[patient][0].shape[0]), p=self.slice_weights[patient]
             )
 
         v, m = self.volumes[patient]
@@ -232,7 +229,6 @@ def transforms(scale=None, angle=None, flip_prob=None):
 
 
 class Scale(object):
-
     def __init__(self, scale):
         self.scale = scale
 
@@ -263,8 +259,7 @@ class Scale(object):
 
         if scale < 1.0:
             diff = (img_size - image.shape[0]) / 2.0
-            padding = ((int(np.floor(diff)), int(np.ceil(diff))),) * 2 + (
-            (0, 0),)
+            padding = ((int(np.floor(diff)), int(np.ceil(diff))),) * 2 + ((0, 0),)
             image = np.pad(image, padding, mode="constant", constant_values=0)
             mask = np.pad(mask, padding, mode="constant", constant_values=0)
         else:
@@ -277,7 +272,6 @@ class Scale(object):
 
 
 class Rotate(object):
-
     def __init__(self, angle):
         self.angle = angle
 
@@ -285,17 +279,14 @@ class Rotate(object):
         image, mask = sample
 
         angle = np.random.uniform(low=-self.angle, high=self.angle)
-        image = rotate(image, angle, resize=False, preserve_range=True,
-                       mode="constant")
+        image = rotate(image, angle, resize=False, preserve_range=True, mode="constant")
         mask = rotate(
-            mask, angle, resize=False, order=0, preserve_range=True,
-            mode="constant"
+            mask, angle, resize=False, order=0, preserve_range=True, mode="constant"
         )
         return image, mask
 
 
 class HorizontalFlip(object):
-
     def __init__(self, flip_prob):
         self.flip_prob = flip_prob
 
@@ -312,7 +303,6 @@ class HorizontalFlip(object):
 
 
 class UNet(nn.Module):
-
     def __init__(self, in_channels=3, out_channels=1, init_features=32):
         super(UNet, self).__init__()
 
@@ -326,24 +316,20 @@ class UNet(nn.Module):
         self.encoder4 = UNet._block(features * 4, features * 8, name="enc4")
         self.pool4 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.bottleneck = UNet._block(features * 8, features * 16,
-                                      name="bottleneck")
+        self.bottleneck = UNet._block(features * 8, features * 16, name="bottleneck")
 
         self.upconv4 = nn.ConvTranspose2d(
             features * 16, features * 8, kernel_size=2, stride=2
         )
-        self.decoder4 = UNet._block((features * 8) * 2, features * 8,
-                                    name="dec4")
+        self.decoder4 = UNet._block((features * 8) * 2, features * 8, name="dec4")
         self.upconv3 = nn.ConvTranspose2d(
             features * 8, features * 4, kernel_size=2, stride=2
         )
-        self.decoder3 = UNet._block((features * 4) * 2, features * 4,
-                                    name="dec3")
+        self.decoder3 = UNet._block((features * 4) * 2, features * 4, name="dec3")
         self.upconv2 = nn.ConvTranspose2d(
             features * 4, features * 2, kernel_size=2, stride=2
         )
-        self.decoder2 = UNet._block((features * 2) * 2, features * 2,
-                                    name="dec2")
+        self.decoder2 = UNet._block((features * 2) * 2, features * 2, name="dec2")
         self.upconv1 = nn.ConvTranspose2d(
             features * 2, features, kernel_size=2, stride=2
         )
@@ -410,7 +396,6 @@ class UNet(nn.Module):
 
 
 class DiceLoss(nn.Module):
-
     def __init__(self):
         super(DiceLoss, self).__init__()
         self.smooth = 1.0
@@ -420,10 +405,10 @@ class DiceLoss(nn.Module):
         y_pred = y_pred[:, 0].contiguous().view(-1)
         y_true = y_true[:, 0].contiguous().view(-1)
         intersection = (y_pred * y_true).sum()
-        dsc = (2. * intersection + self.smooth) / (
-                y_pred.sum() + y_true.sum() + self.smooth
+        dsc = (2.0 * intersection + self.smooth) / (
+            y_pred.sum() + y_true.sum() + self.smooth
         )
-        return 1. - dsc
+        return 1.0 - dsc
 
 
 def log_images(x, y_true, y_pred, channel=1):
@@ -454,16 +439,15 @@ def outline(image, mask, color):
     mask = np.round(mask)
     yy, xx = np.nonzero(mask)
     for y, x in zip(yy, xx):
-        if 0.0 < np.mean(
-                mask[max(0, y - 1): y + 2, max(0, x - 1): x + 2]) < 1.0:
-            image[max(0, y): y + 1, max(0, x): x + 1] = color
+        if 0.0 < np.mean(mask[max(0, y - 1) : y + 2, max(0, x - 1) : x + 2]) < 1.0:
+            image[max(0, y) : y + 1, max(0, x) : x + 1] = color
     return image
 
 
 def data_loaders(batch_size, workers, image_size, aug_scale, aug_angle):
     dataset_train, dataset_valid = datasets(
-        "/home/tudor/PySyft/Q&AId/core/kaggle_3m", image_size, aug_scale,
-        aug_angle)
+        "/home/tudor/PySyft/Q&AId/core/kaggle_3m", image_size, aug_scale, aug_angle
+    )
 
     def worker_init(worker_id):
         np.random.seed(42 + worker_id)
@@ -523,25 +507,25 @@ def dsc_per_volume(validation_pred, validation_true, patient_slice_index):
     num_slices = np.bincount([p[0] for p in patient_slice_index])
     index = 0
     for p in range(len(num_slices)):
-        y_pred = np.array(validation_pred[index: index + num_slices[p]])
-        y_true = np.array(validation_true[index: index + num_slices[p]])
+        y_pred = np.array(validation_pred[index : index + num_slices[p]])
+        y_true = np.array(validation_true[index : index + num_slices[p]])
         dsc_list.append(dsc(y_pred, y_true))
         index += num_slices[p]
     return dsc_list
 
 
 def postprocess_per_volume(
-        input_list, pred_list, true_list, patient_slice_index, patients
+    input_list, pred_list, true_list, patient_slice_index, patients
 ):
     volumes = {}
     num_slices = np.bincount([p[0] for p in patient_slice_index])
     index = 0
     for p in range(len(num_slices)):
-        volume_in = np.array(input_list[index: index + num_slices[p]])
+        volume_in = np.array(input_list[index : index + num_slices[p]])
         volume_pred = np.round(
-            np.array(pred_list[index: index + num_slices[p]])
+            np.array(pred_list[index : index + num_slices[p]])
         ).astype(int)
-        volume_true = np.array(true_list[index: index + num_slices[p]])
+        volume_true = np.array(true_list[index : index + num_slices[p]])
         volumes[patients[p]] = (volume_in, volume_pred, volume_true)
         index += num_slices[p]
     return volumes
@@ -591,12 +575,15 @@ aug_angle = 15
 def train_validate():
     device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
     print(device)
-    loader_train, loader_valid = data_loaders(batch_size, workers, image_size,
-                                              aug_scale, aug_angle)
+    loader_train, loader_valid = data_loaders(
+        batch_size, workers, image_size, aug_scale, aug_angle
+    )
     loaders = {"train": loader_train, "valid": loader_valid}
 
-    unet = UNet(in_channels=BrainSegmentationDataset.in_channels,
-                out_channels=BrainSegmentationDataset.out_channels)
+    unet = UNet(
+        in_channels=BrainSegmentationDataset.in_channels,
+        out_channels=BrainSegmentationDataset.out_channels,
+    )
     unet.to(device)
 
     dsc_loss = DiceLoss()
@@ -665,8 +652,7 @@ def train_validate():
                 log_scalar_summary("val_dsc", mean_dsc, epoch)
                 if mean_dsc > best_validation_dsc:
                     best_validation_dsc = mean_dsc
-                    torch.save(unet.state_dict(),
-                               os.path.join(weights, "unet.pt"))
+                    torch.save(unet.state_dict(), os.path.join(weights, "unet.pt"))
                 loss_valid = []
 
     print("\nBest validation mean DSC: {:4f}\n".format(best_validation_dsc))

@@ -8,7 +8,7 @@ full_topics = [
     "xr_shoulder",
     "xr_wrist",
     "xr_chest",
-    "scan_rain",
+    "scan_brain",
     "scan_breast",
     "scan_eyes",
     "scan_heart",
@@ -17,11 +17,11 @@ full_topics = [
 
 def generate_mocks():
     return [
-        HealthIntelProviderLocal("Gotham General Hospital", ["vqa"], full_topics),
+        HealthIntelProviderLocal("Gotham General Hospital", ["vqa"], ["scan_brain"]),
         HealthIntelProviderLocal(
-            "Metropolis General Hospital", ["vqa"], ["xr_elbow", "xr_forearm"]
+            "Metropolis General Hospital", ["vqa"], ["scan_brain", "xr_chest"]
         ),
         HealthIntelProviderLocal("Smallville Medical Center", ["vqa"], ["xr_chest"]),
-        HealthIntelProviderLocal("Mercy General Hospital", [], []),
-        HealthIntelProviderLocal("St. Mary's Hospital", [], full_topics),
+        HealthIntelProviderLocal("Mercy General Hospital", ["vqa"], ["xr_chest"]),
+        HealthIntelProviderLocal("St. Mary's Hospital", ["vqa"], []),
     ]

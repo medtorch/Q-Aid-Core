@@ -20,7 +20,7 @@ class ImageRouter:
             "xr_hummerus": 3,
             "xr_shoulder": 4,
             "xr_wrist": 5,
-            "scan_rain": 6,
+            "scan_brain": 6,
             "scan_breast": 7,
             "xr_chest": 8,
             "scan_eyes": 9,
