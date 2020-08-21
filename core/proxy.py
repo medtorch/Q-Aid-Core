@@ -50,6 +50,7 @@ class Proxy:
         results["aggregated"] = {}
 
         for provider in data:
+            results["total"] += 1
             for model in data[provider]:
                 if model not in results["aggregated"]:
                     results["aggregated"][model] = {}
@@ -103,6 +104,8 @@ class Proxy:
         results["has"] = has_anomaly["aggregated"]["vqa"]["yes"]
         for qtype in questions:
             res = self.ask(questions[qtype], image_b64, topic)
+            res = self.aggregate(res)
+
             results[qtype] = res["aggregated"]["vqa"]
 
         return results
