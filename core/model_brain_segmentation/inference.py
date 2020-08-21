@@ -2,8 +2,8 @@ import numpy as np
 import torch
 from medpy.filter.binary import largest_connected_component
 import base64
-from unet import UNet
-from utils import gray2rgb, outline, normalize_volume
+from model_brain_segmentation.unet import UNet
+from model_brain_segmentation.utils import gray2rgb, outline, normalize_volume
 from io import BytesIO
 
 from PIL import Image
@@ -12,7 +12,7 @@ from PIL import Image
 class Segmentation:
     def __init__(self):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        weights = "./weights/unet.pt"
+        weights = "model_brain_segmentation//weights/unet.pt"
 
         self.model = UNet(in_channels=3, out_channels=1)
         state_dict = torch.load(weights, map_location=self.device)
