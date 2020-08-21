@@ -6,8 +6,11 @@ import base64
 import time
 from collections import OrderedDict
 
+
 class Prefilter:
     def __init__(self):
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         input_size = 224
 
@@ -23,12 +26,15 @@ class Prefilter:
         self.model = models.densenet121(pretrained=False)
         num_ftrs = self.model.classifier.in_features
         self.model.classifier = torch.nn.Sequential(
-            OrderedDict([
-                ("drop", torch.nn.Dropout(0.2)),
-                ("class", torch.nn.Linear(num_ftrs, 2))
-            ]))
+            OrderedDict(
+                [
+                    ("drop", torch.nn.Dropout(0.2)),
+                    ("class", torch.nn.Linear(num_ftrs, 2)),
+                ]
+            )
+        )
 
-        state_dict = torch.load("model_prefilter/medical_binary_classifier.pt")
+        state_dict = torch.load("model_prefilter/medical_binary_classifier.pt", device)
         self.model.load_state_dict(state_dict)
         self.model.eval()
 

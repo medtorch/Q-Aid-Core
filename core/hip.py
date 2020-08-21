@@ -1,3 +1,5 @@
+import base64
+
 from model_vqa.inference import VQA
 from model_brain_segmentation.inference import Segmentation
 
@@ -15,6 +17,7 @@ class HealthIntelProviderLocal:
             if feat == "vqa":
                 self.models[feat] = VQA()
             elif feat == "segmentation":
+                print("loading segmentation capability")
                 self.models[feat] = Segmentation()
             else:
                 raise "not implemented"
@@ -38,10 +41,12 @@ class HealthIntelProviderLocal:
 
         results = {}
         try:
-            result = self.models["segmentation"].ask(image_b64)
+            result = base64.b64encode(
+                self.models["segmentation"].ask(image_b64)
+            ).decode()
             results["segmentation"] = result
         except BaseException as e:
-            print("vqa failed ", e)
+            print("segmentation failed ", e)
 
         return results
 

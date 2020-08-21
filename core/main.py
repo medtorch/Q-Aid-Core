@@ -31,14 +31,13 @@ def vqa_task(q: QuestionProto):
 
 
 @app.post("/segmentation")
-def segmentation_task(q: QuestionProto):
+def segmentation_task(q: ImageProto):
     try:
         prefilter = proxy.prefilter(q.image_b64)
         if not prefilter["valid"]:
             return {"error": "invalid input"}
 
-        result = proxy.segmentation(q.image_b64, prefilter["topic"])
-        result = proxy.aggregate(result)
+        result = proxy.segment(q.image_b64, prefilter["topic"])
         return {"answer": result}
     except BaseException as e:
         return {"error": str(e)}
