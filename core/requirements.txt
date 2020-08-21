@@ -9,3 +9,5 @@ Pillow
 torch
 torchvision
 uvicorn
+medpy
+scikit-image

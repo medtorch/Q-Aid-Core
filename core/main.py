@@ -16,6 +16,11 @@ def get_sources():
     return proxy.sources()
 
 
+@app.get("/capabilities")
+def get_sources():
+    return proxy.capabilities()
+
+
 @app.post("/vqa")
 def vqa_task(q: QuestionProto):
     try:

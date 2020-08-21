@@ -44,6 +44,17 @@ class Proxy:
             result.append(provider.name)
         return result
 
+    def capabilities(self):
+        result = {}
+        for provider in self.providers:
+            for model in provider.capabilities:
+                if model not in result:
+                    result[model] = []
+                for topic in provider.capabilities[model]:
+                    if topic not in result[model]:
+                        result[model].append(topic)
+        return result
+
     def aggregate(self, results):
         data = results["hip"]
         results["total"] = 0
