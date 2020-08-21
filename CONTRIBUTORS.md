@@ -1,5 +1,5 @@
-Bogdan Cebere
+[Tudor Cebere](https://github.com/tudorcebere)
 
-Tudor Cebere
+[Bogdan Cebere](https://github.com/bcebere)
 
-Andrei Manolache
+[Andrei Manolache](https://github.com/andreimano)
