@@ -96,6 +96,7 @@ def log_images(x, y_true, y_pred, channel=1):
         images.append(image)
     return images
 
+
 def gray2rgb(image):
     w, h = image.shape
     image += np.abs(np.min(image))

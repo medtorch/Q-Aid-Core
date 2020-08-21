@@ -6,7 +6,7 @@ import requests
 
 model_root = Path("MICCAI19-MedVQA")
 
-data = json.load(open(model_root / "data_RAD/testset.json"))
+data = json.load(open(model_root / "data_RAD/trainset.json"))
 img_folder = model_root / "data_RAD/images/"
 
 questions = {}
@@ -36,6 +36,9 @@ requests_session = requests.Session()
 server = "http://127.0.0.1:8000"
 
 for tag in questions:
+    if tag != "HEAD" and tag != "CHEST":
+        continue
+
     for q in questions[tag]:
         payload = {
             "image_b64": q["image_b64"],
@@ -61,9 +64,9 @@ for tag in questions:
         result = data["answer"]
 
         matching = 0
-        for hospital in result:
+        for hospital in result["hip"]:
             expected = str(q["expected_answer"]).lower()
-            actual = str(result[hospital]["vqa"]).lower()
+            actual = str(result["hip"][hospital]["vqa"]).lower()
             if expected == actual:
                 matching += 1
 

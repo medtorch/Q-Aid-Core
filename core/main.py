@@ -31,6 +31,12 @@ def vqa_query(q: QuestionProto):
 def prefilter_query(q: ImageProto):
     try:
         result = image_filter.ask(q)
+
+        if not result["valid"]:
+            return {"answer": result}
+
+        result["anomalies"] = proxy.has_anomalies(q, result)
+
         return {"answer": result}
     except BaseException as e:
         return {"error": str(e)}
