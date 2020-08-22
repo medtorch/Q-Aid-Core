@@ -5,10 +5,6 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Q&Aid](https://github.com/medtorch/Q-Aid/workflows/Q&Aid/badge.svg)
 
-## Motivation
-
-TODO
-
 ## Features
 
 - :fire: Collection of healthcare AI models under [core](core), created using PyTorch.
