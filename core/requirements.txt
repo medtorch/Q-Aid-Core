@@ -11,3 +11,4 @@ torchvision
 uvicorn
 medpy
 scikit-image
+nltk

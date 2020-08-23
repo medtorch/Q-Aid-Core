@@ -8,3 +8,7 @@ class QuestionProto(BaseModel):
 
 class ImageProto(BaseModel):
     image_b64: str
+
+
+class NLPProto(BaseModel):
+    data: str
