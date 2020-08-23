@@ -34,10 +34,7 @@ for subdir, dirs, files in os.walk(samples):
         for source in output:
             string = output[source]["segmentation"]
             decoded = base64.b64decode(string)
+            decoded = BytesIO(decoded)
+            img = Image.open(decoded)
 
-            np_img = np.frombuffer(decoded, dtype=np.uint8)
-            np_img = np_img.reshape((256, 256, 3))
-
-            image = Image.fromarray(np_img.astype('uint8'), 'RGB')
-
-            image.save(os.path.join(subdir, f"result_{f}"), "PNG")
+            img.save(os.path.join(subdir, f"result_{f}"), "PNG")

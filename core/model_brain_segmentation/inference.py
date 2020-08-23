@@ -4,7 +4,8 @@ from medpy.filter.binary import largest_connected_component
 import base64
 from model_brain_segmentation.unet import UNet
 from model_brain_segmentation.utils import gray2rgb, outline, normalize_volume
-from io import BytesIO
+from io import BytesIO, StringIO
+from skimage.io import imsave
 
 from PIL import Image
 
@@ -29,6 +30,8 @@ class Segmentation:
     def ask(self, image_b64):
         decoded = base64.b64decode(image_b64)
         img = Image.open(BytesIO(decoded)).convert("RGB")
+        img = img.resize((256, 256))
+
         img = normalize_volume(np.array(img))
 
         img = self.transform(img)
@@ -41,7 +44,7 @@ class Segmentation:
         if len(seg_mask[seg_mask != 0]) != 0:
             seg_mask = largest_connected_component(seg_mask)
         else:
-            seg_mask = np.array(seg_mask, dtype=bool)
+            raise BaseException("nothing found")
 
         initial_image = img.reshape((3, 256, 256))[1]
         initial_image = initial_image.reshape((256, 256)).detach().cpu().numpy()
@@ -49,4 +52,10 @@ class Segmentation:
         initial_image = gray2rgb(initial_image)
         outlined_img = outline(initial_image, seg_mask, color=[255, 0, 0])
 
-        return outlined_img
+        out_img = Image.fromarray(outlined_img)
+
+        imgByteArr = BytesIO()
+        out_img.save(imgByteArr, format="PNG")
+        imgByteArr = imgByteArr.getvalue()
+
+        return imgByteArr
