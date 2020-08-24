@@ -22,10 +22,10 @@ pip install -r requirements.txt
 
 ### Models
 
-See the [models README](core/README.md).
-
+Read more about the models [here](https://github.com/medtorch/Q-Aid-Models).
 ### App
-See the [apps README](app/README.md).
+
+Read more about the app [here](https://github.com/medtorch/Q-Aid-App).
 
 ### Server
 
