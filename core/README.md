@@ -25,7 +25,7 @@ and save it to the path models/model_vqa/MICCAI19-MedVQA/saved_models/BAN_MEVF/m
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-GET http://127.0.0.1:8000/models should return the list of available models.
+GET http://127.0.0.1:8000/capabilities should return the list of available models.
 
 ## Tests
 
