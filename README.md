@@ -14,10 +14,6 @@
 
 ## Installation
 
-```
-pip install -r requirements.txt
-```
-
 ## Usage
 
 ### Models
@@ -29,17 +25,8 @@ Read more about the app [here](https://github.com/medtorch/Q-Aid-App).
 
 ### Server
 
-Run the server using `Docker`
-```
-docker build -t qaid/model_api .
-docker run -p 8000:8000 qaid/model_api
-```
+Read more about the server setup [here](https://github.com/medtorch/Q-Aid-Core/blob/master/core/README.md)
 
-Or using `uvicorn`
-```
-cd core
-uvicorn main:app
-```
 ### AWS deployment
 Seet the [AWS README](aws_backend/README.md).
 
