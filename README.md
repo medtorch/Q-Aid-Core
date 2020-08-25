@@ -25,7 +25,7 @@ Read more about the app [here](https://github.com/medtorch/Q-Aid-App).
 
 ### Server
 
-Read more about the server setup [here](https://github.com/medtorch/Q-Aid-Core/blob/master/core/README.md)
+Read more about the server setup [here](https://github.com/medtorch/Q-Aid-Core/blob/master/core/README.md).
 
 ### AWS deployment
 Seet the [AWS README](aws_backend/README.md).
