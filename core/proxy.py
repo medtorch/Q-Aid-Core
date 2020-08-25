@@ -1,5 +1,5 @@
-from model_prefilter.inference import Prefilter
-from model_medical_label.inference import ImageRouter
+from models.model_prefilter.inference import Prefilter
+from models.model_medical_label.inference import ImageRouter
 
 from helpers import hash_input
 

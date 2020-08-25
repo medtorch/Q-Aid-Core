@@ -1,7 +1,7 @@
 import base64
 
-from model_vqa.inference import VQA
-from model_brain_segmentation.inference import Segmentation
+from models.model_vqa.inference import VQA
+from models.model_brain_segmentation.inference import Segmentation
 
 
 class HealthIntelProviderLocal:

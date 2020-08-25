@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 
 from proto import QuestionProto, ImageProto, NLPProto
